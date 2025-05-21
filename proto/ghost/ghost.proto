@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package ghost;
+
+option go_package = "oddin.gg/ghost";
+option java_package = "com.oddin.ghost";
+
+message MatchInfoRequest {
+  string match_urn = 1;
+}
+
+message MatchInfoResponse {
+  oneof match_info {
+    CS2MatchInfoResponse cs2 = 1;
+    Dota2MatchInfoResponse dota2 = 2;
+  }
+}
+
+message CS2MatchInfoResponse {
+  string map_name = 2;
+  string map_asset_name = 3;
+  string game_version = 4;
+}
+
+message Dota2MatchInfoResponse {
+  string game_version = 2;
+}
+
+message MatchStatusRequest {
+  string match_urn = 1;
+}
+
+enum MatchStatus {
+  MATCH_STATUS_UNKNOWN = 0;
+  MATCH_STATUS_AVAILABLE = 1;
+  MATCH_STATUS_UNAVAILABLE = 2;
+}
+
+message MatchStatusResponse {
+  MatchStatus match_status = 1;
+}
+
+service Ghost {
+  rpc GetMatchInfo(MatchInfoRequest) returns (MatchInfoResponse);
+  rpc GetMatchStatus(MatchStatusRequest) returns (MatchStatusResponse);
+}
