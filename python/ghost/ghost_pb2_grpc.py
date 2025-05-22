@@ -50,13 +50,15 @@ class GhostServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def GetMatchInfo(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Used to retrieve info about the match specific to the sport
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetMatchStatus(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Used to check the availability of the match for Ghost
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')

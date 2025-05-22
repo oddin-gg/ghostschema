@@ -6,41 +6,52 @@ option go_package = "oddin.gg/ghost";
 option java_package = "com.oddin.ghost";
 
 message MatchInfoRequest {
+  // The match URN is a unique identifier for the match. e.g. "od:match:12345"
   string match_urn = 1;
 }
 
 message MatchInfoResponse {
   oneof match_info {
+    // Returns in case of CS2 match
     CS2MatchInfoResponse cs2 = 1;
+    // Returns in case of Dota2 match
     Dota2MatchInfoResponse dota2 = 2;
   }
 }
 
 message CS2MatchInfoResponse {
+  // Specifies the current map of the match.
   string map_name = 2;
+  // Specifies the asset name of the current map.
   string map_asset_name = 3;
-  string game_version = 4;
 }
 
 message Dota2MatchInfoResponse {
-  string game_version = 2;
 }
 
 message MatchStatusRequest {
+  // The match URN is a unique identifier for the match. e.g. "od:match:12345"
   string match_urn = 1;
 }
 
 enum MatchStatus {
-  MATCH_STATUS_UNKNOWN = 0;
+  // Not a valid value. Used for blocking 0 as invalid status.
+  MATCH_STATUS_UNDEFINED = 0;
+  // Match is available to be streamed for Ghost.
   MATCH_STATUS_AVAILABLE = 1;
+  // Match is not available to be streamed for Ghost e.g. match is played "online".
   MATCH_STATUS_UNAVAILABLE = 2;
 }
 
 message MatchStatusResponse {
+  // Current availability status of the match for Ghost.
   MatchStatus match_status = 1;
 }
 
 service Ghost {
+  // Used to retrieve info about the match specific to the sport
   rpc GetMatchInfo(MatchInfoRequest) returns (MatchInfoResponse);
+
+  // Used to check the availability of the match for Ghost
   rpc GetMatchStatus(MatchStatusRequest) returns (MatchStatusResponse);
 }

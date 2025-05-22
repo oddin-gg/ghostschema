@@ -65,9 +65,6 @@ export class CS2MatchInfoResponse extends jspb.Message {
   getMapAssetName(): string;
   setMapAssetName(value: string): void;
 
-  getGameVersion(): string;
-  setGameVersion(value: string): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CS2MatchInfoResponse.AsObject;
   static toObject(includeInstance: boolean, msg: CS2MatchInfoResponse): CS2MatchInfoResponse.AsObject;
@@ -82,14 +79,10 @@ export namespace CS2MatchInfoResponse {
   export type AsObject = {
     mapName: string,
     mapAssetName: string,
-    gameVersion: string,
   }
 }
 
 export class Dota2MatchInfoResponse extends jspb.Message {
-  getGameVersion(): string;
-  setGameVersion(value: string): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Dota2MatchInfoResponse.AsObject;
   static toObject(includeInstance: boolean, msg: Dota2MatchInfoResponse): Dota2MatchInfoResponse.AsObject;
@@ -102,7 +95,6 @@ export class Dota2MatchInfoResponse extends jspb.Message {
 
 export namespace Dota2MatchInfoResponse {
   export type AsObject = {
-    gameVersion: string,
   }
 }
 
@@ -147,7 +139,7 @@ export namespace MatchStatusResponse {
 }
 
 export interface MatchStatusMap {
-  MATCH_STATUS_UNKNOWN: 0;
+  MATCH_STATUS_UNDEFINED: 0;
   MATCH_STATUS_AVAILABLE: 1;
   MATCH_STATUS_UNAVAILABLE: 2;
 }
