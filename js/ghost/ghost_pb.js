@@ -546,8 +546,7 @@ proto.ghost.CS2MatchInfoResponse.prototype.toObject = function(opt_includeInstan
 proto.ghost.CS2MatchInfoResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
 mapName: jspb.Message.getFieldWithDefault(msg, 2, ""),
-mapAssetName: jspb.Message.getFieldWithDefault(msg, 3, ""),
-gameVersion: jspb.Message.getFieldWithDefault(msg, 4, "")
+mapAssetName: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -592,10 +591,6 @@ proto.ghost.CS2MatchInfoResponse.deserializeBinaryFromReader = function(msg, rea
       var value = /** @type {string} */ (reader.readString());
       msg.setMapAssetName(value);
       break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setGameVersion(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -639,13 +634,6 @@ proto.ghost.CS2MatchInfoResponse.serializeBinaryToWriter = function(message, wri
       f
     );
   }
-  f = message.getGameVersion();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
 };
 
 
@@ -685,24 +673,6 @@ proto.ghost.CS2MatchInfoResponse.prototype.setMapAssetName = function(value) {
 };
 
 
-/**
- * optional string game_version = 4;
- * @return {string}
- */
-proto.ghost.CS2MatchInfoResponse.prototype.getGameVersion = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.ghost.CS2MatchInfoResponse} returns this
- */
-proto.ghost.CS2MatchInfoResponse.prototype.setGameVersion = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
 
 
 
@@ -735,7 +705,7 @@ proto.ghost.Dota2MatchInfoResponse.prototype.toObject = function(opt_includeInst
  */
 proto.ghost.Dota2MatchInfoResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-gameVersion: jspb.Message.getFieldWithDefault(msg, 2, "")
+
   };
 
   if (includeInstance) {
@@ -772,10 +742,6 @@ proto.ghost.Dota2MatchInfoResponse.deserializeBinaryFromReader = function(msg, r
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setGameVersion(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -805,31 +771,6 @@ proto.ghost.Dota2MatchInfoResponse.prototype.serializeBinary = function() {
  */
 proto.ghost.Dota2MatchInfoResponse.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getGameVersion();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string game_version = 2;
- * @return {string}
- */
-proto.ghost.Dota2MatchInfoResponse.prototype.getGameVersion = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.ghost.Dota2MatchInfoResponse} returns this
- */
-proto.ghost.Dota2MatchInfoResponse.prototype.setGameVersion = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -1097,7 +1038,7 @@ proto.ghost.MatchStatusResponse.prototype.setMatchStatus = function(value) {
  * @enum {number}
  */
 proto.ghost.MatchStatus = {
-  MATCH_STATUS_UNKNOWN: 0,
+  MATCH_STATUS_UNDEFINED: 0,
   MATCH_STATUS_AVAILABLE: 1,
   MATCH_STATUS_UNAVAILABLE: 2
 };

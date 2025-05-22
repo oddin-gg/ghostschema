@@ -27,7 +27,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GhostClient interface {
+	// Used to retrieve info about the match specific to the sport
 	GetMatchInfo(ctx context.Context, in *MatchInfoRequest, opts ...grpc.CallOption) (*MatchInfoResponse, error)
+	// Used to check the availability of the match for Ghost
 	GetMatchStatus(ctx context.Context, in *MatchStatusRequest, opts ...grpc.CallOption) (*MatchStatusResponse, error)
 }
 
@@ -63,7 +65,9 @@ func (c *ghostClient) GetMatchStatus(ctx context.Context, in *MatchStatusRequest
 // All implementations must embed UnimplementedGhostServer
 // for forward compatibility.
 type GhostServer interface {
+	// Used to retrieve info about the match specific to the sport
 	GetMatchInfo(context.Context, *MatchInfoRequest) (*MatchInfoResponse, error)
+	// Used to check the availability of the match for Ghost
 	GetMatchStatus(context.Context, *MatchStatusRequest) (*MatchStatusResponse, error)
 	mustEmbedUnimplementedGhostServer()
 }

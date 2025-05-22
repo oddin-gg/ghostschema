@@ -50,7 +50,8 @@ function deserialize_ghost_MatchStatusResponse(buffer_arg) {
 
 
 var GhostService = exports.GhostService = {
-  getMatchInfo: {
+  // Used to retrieve info about the match specific to the sport
+getMatchInfo: {
     path: '/ghost.Ghost/GetMatchInfo',
     requestStream: false,
     responseStream: false,
@@ -61,7 +62,8 @@ var GhostService = exports.GhostService = {
     responseSerialize: serialize_ghost_MatchInfoResponse,
     responseDeserialize: deserialize_ghost_MatchInfoResponse,
   },
-  getMatchStatus: {
+  // Used to check the availability of the match for Ghost
+getMatchStatus: {
     path: '/ghost.Ghost/GetMatchStatus',
     requestStream: false,
     responseStream: false,

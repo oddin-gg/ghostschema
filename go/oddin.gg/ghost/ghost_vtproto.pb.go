@@ -125,9 +125,6 @@ func (this *CS2MatchInfoResponse) EqualVT(that *CS2MatchInfoResponse) bool {
 	if this.MapAssetName != that.MapAssetName {
 		return false
 	}
-	if this.GameVersion != that.GameVersion {
-		return false
-	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
 
@@ -142,9 +139,6 @@ func (this *Dota2MatchInfoResponse) EqualVT(that *Dota2MatchInfoResponse) bool {
 	if this == that {
 		return true
 	} else if this == nil || that == nil {
-		return false
-	}
-	if this.GameVersion != that.GameVersion {
 		return false
 	}
 	return string(this.unknownFields) == string(that.unknownFields)
