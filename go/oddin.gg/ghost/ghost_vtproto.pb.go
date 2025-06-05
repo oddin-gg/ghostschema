@@ -53,6 +53,9 @@ func (this *MatchInfoResponse) EqualVT(that *MatchInfoResponse) bool {
 			return false
 		}
 	}
+	if this.Host != that.Host {
+		return false
+	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
 

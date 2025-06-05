@@ -34,6 +34,9 @@ export class MatchInfoResponse extends jspb.Message {
   getDota2(): Dota2MatchInfoResponse | undefined;
   setDota2(value?: Dota2MatchInfoResponse): void;
 
+  getHost(): string;
+  setHost(value: string): void;
+
   getMatchInfoCase(): MatchInfoResponse.MatchInfoCase;
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MatchInfoResponse.AsObject;
@@ -49,6 +52,7 @@ export namespace MatchInfoResponse {
   export type AsObject = {
     cs2?: CS2MatchInfoResponse.AsObject,
     dota2?: Dota2MatchInfoResponse.AsObject,
+    host: string,
   }
 
   export enum MatchInfoCase {
