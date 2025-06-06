@@ -344,7 +344,8 @@ proto.ghost.MatchInfoResponse.prototype.toObject = function(opt_includeInstance)
 proto.ghost.MatchInfoResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
 cs2: (f = msg.getCs2()) && proto.ghost.CS2MatchInfoResponse.toObject(includeInstance, f),
-dota2: (f = msg.getDota2()) && proto.ghost.Dota2MatchInfoResponse.toObject(includeInstance, f)
+dota2: (f = msg.getDota2()) && proto.ghost.Dota2MatchInfoResponse.toObject(includeInstance, f),
+host: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -391,6 +392,10 @@ proto.ghost.MatchInfoResponse.deserializeBinaryFromReader = function(msg, reader
       reader.readMessage(value,proto.ghost.Dota2MatchInfoResponse.deserializeBinaryFromReader);
       msg.setDota2(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHost(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -434,6 +439,13 @@ proto.ghost.MatchInfoResponse.serializeBinaryToWriter = function(message, writer
       2,
       f,
       proto.ghost.Dota2MatchInfoResponse.serializeBinaryToWriter
+    );
+  }
+  f = message.getHost();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
     );
   }
 };
@@ -510,6 +522,24 @@ proto.ghost.MatchInfoResponse.prototype.clearDota2 = function() {
  */
 proto.ghost.MatchInfoResponse.prototype.hasDota2 = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional string host = 3;
+ * @return {string}
+ */
+proto.ghost.MatchInfoResponse.prototype.getHost = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.ghost.MatchInfoResponse} returns this
+ */
+proto.ghost.MatchInfoResponse.prototype.setHost = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 

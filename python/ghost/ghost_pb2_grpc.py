@@ -5,7 +5,7 @@ import warnings
 
 from ghost_schema.ghost import ghost_pb2 as ghost_dot_ghost__pb2
 
-GRPC_GENERATED_VERSION = '1.71.0'
+GRPC_GENERATED_VERSION = '1.72.1'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
