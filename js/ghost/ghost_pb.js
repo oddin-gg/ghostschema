@@ -577,7 +577,8 @@ proto.ghost.CS2MatchInfoResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
 mapName: jspb.Message.getFieldWithDefault(msg, 2, ""),
 mapAssetName: jspb.Message.getFieldWithDefault(msg, 3, ""),
-gameVersion: jspb.Message.getFieldWithDefault(msg, 4, "")
+gameVersion: jspb.Message.getFieldWithDefault(msg, 4, ""),
+assetUrl: jspb.Message.getFieldWithDefault(msg, 5, "")
   };
 
   if (includeInstance) {
@@ -626,6 +627,10 @@ proto.ghost.CS2MatchInfoResponse.deserializeBinaryFromReader = function(msg, rea
       var value = /** @type {string} */ (reader.readString());
       msg.setGameVersion(value);
       break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setAssetUrl(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -673,6 +678,13 @@ proto.ghost.CS2MatchInfoResponse.serializeBinaryToWriter = function(message, wri
   if (f.length > 0) {
     writer.writeString(
       4,
+      f
+    );
+  }
+  f = message.getAssetUrl();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
       f
     );
   }
@@ -733,6 +745,24 @@ proto.ghost.CS2MatchInfoResponse.prototype.setGameVersion = function(value) {
 };
 
 
+/**
+ * optional string asset_url = 5;
+ * @return {string}
+ */
+proto.ghost.CS2MatchInfoResponse.prototype.getAssetUrl = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.ghost.CS2MatchInfoResponse} returns this
+ */
+proto.ghost.CS2MatchInfoResponse.prototype.setAssetUrl = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
 
 
 
@@ -765,7 +795,8 @@ proto.ghost.Dota2MatchInfoResponse.prototype.toObject = function(opt_includeInst
  */
 proto.ghost.Dota2MatchInfoResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-gameVersion: jspb.Message.getFieldWithDefault(msg, 2, "")
+gameVersion: jspb.Message.getFieldWithDefault(msg, 2, ""),
+assetUrl: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -806,6 +837,10 @@ proto.ghost.Dota2MatchInfoResponse.deserializeBinaryFromReader = function(msg, r
       var value = /** @type {string} */ (reader.readString());
       msg.setGameVersion(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setAssetUrl(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -842,6 +877,13 @@ proto.ghost.Dota2MatchInfoResponse.serializeBinaryToWriter = function(message, w
       f
     );
   }
+  f = message.getAssetUrl();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -860,6 +902,24 @@ proto.ghost.Dota2MatchInfoResponse.prototype.getGameVersion = function() {
  */
 proto.ghost.Dota2MatchInfoResponse.prototype.setGameVersion = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string asset_url = 3;
+ * @return {string}
+ */
+proto.ghost.Dota2MatchInfoResponse.prototype.getAssetUrl = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.ghost.Dota2MatchInfoResponse} returns this
+ */
+proto.ghost.Dota2MatchInfoResponse.prototype.setAssetUrl = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 

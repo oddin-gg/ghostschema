@@ -22,10 +22,14 @@ message CS2MatchInfoResponse {
   string map_name = 2;
   string map_asset_name = 3;
   string game_version = 4;
+  // Specifies the URL for the asset of the match.
+  string asset_url = 5;
 }
 
 message Dota2MatchInfoResponse {
   string game_version = 2;
+  // Specifies the URL for the asset of the match.
+  string asset_url = 3;
 }
 
 message MatchStatusRequest {
