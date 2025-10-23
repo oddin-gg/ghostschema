@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11ghost/ghost.proto\x12\x05ghost\"%\n\x10MatchInfoRequest\x12\x11\n\tmatch_urn\x18\x01 \x01(\t\"\x8b\x01\n\x11MatchInfoResponse\x12*\n\x03\x63s2\x18\x01 \x01(\x0b\x32\x1b.ghost.CS2MatchInfoResponseH\x00\x12.\n\x05\x64ota2\x18\x02 \x01(\x0b\x32\x1d.ghost.Dota2MatchInfoResponseH\x00\x12\x0c\n\x04host\x18\x03 \x01(\tB\x0c\n\nmatch_info\"i\n\x14\x43S2MatchInfoResponse\x12\x10\n\x08map_name\x18\x02 \x01(\t\x12\x16\n\x0emap_asset_name\x18\x03 \x01(\t\x12\x14\n\x0cgame_version\x18\x04 \x01(\t\x12\x11\n\tasset_url\x18\x05 \x01(\t\"A\n\x16\x44ota2MatchInfoResponse\x12\x14\n\x0cgame_version\x18\x02 \x01(\t\x12\x11\n\tasset_url\x18\x03 \x01(\t\"\'\n\x12MatchStatusRequest\x12\x11\n\tmatch_urn\x18\x01 \x01(\t\"?\n\x13MatchStatusResponse\x12(\n\x0cmatch_status\x18\x01 \x01(\x0e\x32\x12.ghost.MatchStatus*a\n\x0bMatchStatus\x12\x18\n\x14MATCH_STATUS_UNKNOWN\x10\x00\x12\x1a\n\x16MATCH_STATUS_AVAILABLE\x10\x01\x12\x1c\n\x18MATCH_STATUS_UNAVAILABLE\x10\x02\x32\x93\x01\n\x05Ghost\x12\x41\n\x0cGetMatchInfo\x12\x17.ghost.MatchInfoRequest\x1a\x18.ghost.MatchInfoResponse\x12G\n\x0eGetMatchStatus\x12\x19.ghost.MatchStatusRequest\x1a\x1a.ghost.MatchStatusResponseB!\n\x0f\x63om.oddin.ghostZ\x0eoddin.gg/ghostb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11ghost/ghost.proto\x12\x05ghost\"%\n\x10MatchInfoRequest\x12\x11\n\tmatch_urn\x18\x01 \x01(\t\"\x8b\x01\n\x11MatchInfoResponse\x12*\n\x03\x63s2\x18\x01 \x01(\x0b\x32\x1b.ghost.CS2MatchInfoResponseH\x00\x12.\n\x05\x64ota2\x18\x02 \x01(\x0b\x32\x1d.ghost.Dota2MatchInfoResponseH\x00\x12\x0c\n\x04host\x18\x03 \x01(\tB\x0c\n\nmatch_info\"i\n\x14\x43S2MatchInfoResponse\x12\x10\n\x08map_name\x18\x02 \x01(\t\x12\x16\n\x0emap_asset_name\x18\x03 \x01(\t\x12\x14\n\x0cgame_version\x18\x04 \x01(\t\x12\x11\n\tasset_url\x18\x05 \x01(\t\"A\n\x16\x44ota2MatchInfoResponse\x12\x14\n\x0cgame_version\x18\x02 \x01(\t\x12\x11\n\tasset_url\x18\x03 \x01(\t\"\'\n\x12MatchStatusRequest\x12\x11\n\tmatch_urn\x18\x01 \x01(\t\"?\n\x13MatchStatusResponse\x12(\n\x0cmatch_status\x18\x01 \x01(\x0e\x32\x12.ghost.MatchStatus\"\xa0\x01\n\x0f\x46\x65\x65\x64\x62\x61\x63kRequest\x12*\n\rfeedback_type\x18\x01 \x01(\x0e\x32\x13.ghost.FeedbackType\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x12\n\x05\x65mail\x18\x03 \x01(\tH\x00\x88\x01\x01\x12.\n\x0b\x61ttachments\x18\x04 \x03(\x0b\x32\x19.ghost.FeedbackAttachmentB\x08\n\x06_email\"8\n\x12\x46\x65\x65\x64\x62\x61\x63kAttachment\x12\x14\n\x0c\x63ontent_type\x18\x02 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x03 \x01(\x0c\"\x12\n\x10\x46\x65\x65\x64\x62\x61\x63kResponse*a\n\x0bMatchStatus\x12\x18\n\x14MATCH_STATUS_UNKNOWN\x10\x00\x12\x1a\n\x16MATCH_STATUS_AVAILABLE\x10\x01\x12\x1c\n\x18MATCH_STATUS_UNAVAILABLE\x10\x02*^\n\x0c\x46\x65\x65\x64\x62\x61\x63kType\x12\x19\n\x15\x46\x45\x45\x44\x42\x41\x43K_TYPE_UNKNOWN\x10\x00\x12\x15\n\x11\x46\x45\x45\x44\x42\x41\x43K_TYPE_BUG\x10\x01\x12\x1c\n\x18\x46\x45\x45\x44\x42\x41\x43K_TYPE_SUGGESTION\x10\x02\x32\xd4\x01\n\x05Ghost\x12\x41\n\x0cGetMatchInfo\x12\x17.ghost.MatchInfoRequest\x1a\x18.ghost.MatchInfoResponse\x12G\n\x0eGetMatchStatus\x12\x19.ghost.MatchStatusRequest\x1a\x1a.ghost.MatchStatusResponse\x12?\n\x0cSendFeedback\x12\x16.ghost.FeedbackRequest\x1a\x17.ghost.FeedbackResponseB!\n\x0f\x63om.oddin.ghostZ\x0eoddin.gg/ghostb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,8 +32,10 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'ghost.ghost_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\017com.oddin.ghostZ\016oddin.gg/ghost'
-  _globals['_MATCHSTATUS']._serialized_start=489
-  _globals['_MATCHSTATUS']._serialized_end=586
+  _globals['_MATCHSTATUS']._serialized_start=730
+  _globals['_MATCHSTATUS']._serialized_end=827
+  _globals['_FEEDBACKTYPE']._serialized_start=829
+  _globals['_FEEDBACKTYPE']._serialized_end=923
   _globals['_MATCHINFOREQUEST']._serialized_start=28
   _globals['_MATCHINFOREQUEST']._serialized_end=65
   _globals['_MATCHINFORESPONSE']._serialized_start=68
@@ -46,6 +48,12 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_MATCHSTATUSREQUEST']._serialized_end=422
   _globals['_MATCHSTATUSRESPONSE']._serialized_start=424
   _globals['_MATCHSTATUSRESPONSE']._serialized_end=487
-  _globals['_GHOST']._serialized_start=589
-  _globals['_GHOST']._serialized_end=736
+  _globals['_FEEDBACKREQUEST']._serialized_start=490
+  _globals['_FEEDBACKREQUEST']._serialized_end=650
+  _globals['_FEEDBACKATTACHMENT']._serialized_start=652
+  _globals['_FEEDBACKATTACHMENT']._serialized_end=708
+  _globals['_FEEDBACKRESPONSE']._serialized_start=710
+  _globals['_FEEDBACKRESPONSE']._serialized_end=728
+  _globals['_GHOST']._serialized_start=926
+  _globals['_GHOST']._serialized_end=1138
 # @@protoc_insertion_point(module_scope)

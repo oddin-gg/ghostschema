@@ -4,6 +4,28 @@
 var grpc = require('grpc');
 var ghost_ghost_pb = require('../ghost/ghost_pb.js');
 
+function serialize_ghost_FeedbackRequest(arg) {
+  if (!(arg instanceof ghost_ghost_pb.FeedbackRequest)) {
+    throw new Error('Expected argument of type ghost.FeedbackRequest');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_ghost_FeedbackRequest(buffer_arg) {
+  return ghost_ghost_pb.FeedbackRequest.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
+function serialize_ghost_FeedbackResponse(arg) {
+  if (!(arg instanceof ghost_ghost_pb.FeedbackResponse)) {
+    throw new Error('Expected argument of type ghost.FeedbackResponse');
+  }
+  return Buffer.from(arg.serializeBinary());
+}
+
+function deserialize_ghost_FeedbackResponse(buffer_arg) {
+  return ghost_ghost_pb.FeedbackResponse.deserializeBinary(new Uint8Array(buffer_arg));
+}
+
 function serialize_ghost_MatchInfoRequest(arg) {
   if (!(arg instanceof ghost_ghost_pb.MatchInfoRequest)) {
     throw new Error('Expected argument of type ghost.MatchInfoRequest');
@@ -71,6 +93,17 @@ var GhostService = exports.GhostService = {
     requestDeserialize: deserialize_ghost_MatchStatusRequest,
     responseSerialize: serialize_ghost_MatchStatusResponse,
     responseDeserialize: deserialize_ghost_MatchStatusResponse,
+  },
+  sendFeedback: {
+    path: '/ghost.Ghost/SendFeedback',
+    requestStream: false,
+    responseStream: false,
+    requestType: ghost_ghost_pb.FeedbackRequest,
+    responseType: ghost_ghost_pb.FeedbackResponse,
+    requestSerialize: serialize_ghost_FeedbackRequest,
+    requestDeserialize: deserialize_ghost_FeedbackRequest,
+    responseSerialize: serialize_ghost_FeedbackResponse,
+    responseDeserialize: deserialize_ghost_FeedbackResponse,
   },
 };
 

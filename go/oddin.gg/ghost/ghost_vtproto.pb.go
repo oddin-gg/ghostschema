@@ -204,3 +204,83 @@ func (this *MatchStatusResponse) EqualMessageVT(thatMsg proto.Message) bool {
 	}
 	return this.EqualVT(that)
 }
+func (this *FeedbackRequest) EqualVT(that *FeedbackRequest) bool {
+	if this == that {
+		return true
+	} else if this == nil || that == nil {
+		return false
+	}
+	if this.FeedbackType != that.FeedbackType {
+		return false
+	}
+	if this.Description != that.Description {
+		return false
+	}
+	if p, q := this.Email, that.Email; (p == nil && q != nil) || (p != nil && (q == nil || *p != *q)) {
+		return false
+	}
+	if len(this.Attachments) != len(that.Attachments) {
+		return false
+	}
+	for i, vx := range this.Attachments {
+		vy := that.Attachments[i]
+		if p, q := vx, vy; p != q {
+			if p == nil {
+				p = &FeedbackAttachment{}
+			}
+			if q == nil {
+				q = &FeedbackAttachment{}
+			}
+			if !p.EqualVT(q) {
+				return false
+			}
+		}
+	}
+	return string(this.unknownFields) == string(that.unknownFields)
+}
+
+func (this *FeedbackRequest) EqualMessageVT(thatMsg proto.Message) bool {
+	that, ok := thatMsg.(*FeedbackRequest)
+	if !ok {
+		return false
+	}
+	return this.EqualVT(that)
+}
+func (this *FeedbackAttachment) EqualVT(that *FeedbackAttachment) bool {
+	if this == that {
+		return true
+	} else if this == nil || that == nil {
+		return false
+	}
+	if this.ContentType != that.ContentType {
+		return false
+	}
+	if string(this.Data) != string(that.Data) {
+		return false
+	}
+	return string(this.unknownFields) == string(that.unknownFields)
+}
+
+func (this *FeedbackAttachment) EqualMessageVT(thatMsg proto.Message) bool {
+	that, ok := thatMsg.(*FeedbackAttachment)
+	if !ok {
+		return false
+	}
+	return this.EqualVT(that)
+}
+func (this *FeedbackResponse) EqualVT(that *FeedbackResponse) bool {
+	if this == that {
+		return true
+	} else if this == nil || that == nil {
+		return false
+	}
+	return string(this.unknownFields) == string(that.unknownFields)
+}
+
+func (this *FeedbackResponse) EqualMessageVT(thatMsg proto.Message) bool {
+	that, ok := thatMsg.(*FeedbackResponse)
+	if !ok {
+		return false
+	}
+	return this.EqualVT(that)
+}

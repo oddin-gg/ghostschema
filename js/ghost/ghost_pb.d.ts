@@ -158,6 +158,84 @@ export namespace MatchStatusResponse {
   }
 }
 
+export class FeedbackRequest extends jspb.Message {
+  getFeedbackType(): FeedbackTypeMap[keyof FeedbackTypeMap];
+  setFeedbackType(value: FeedbackTypeMap[keyof FeedbackTypeMap]): void;
+
+  getDescription(): string;
+  setDescription(value: string): void;
+
+  hasEmail(): boolean;
+  clearEmail(): void;
+  getEmail(): string;
+  setEmail(value: string): void;
+
+  clearAttachmentsList(): void;
+  getAttachmentsList(): Array<FeedbackAttachment>;
+  setAttachmentsList(value: Array<FeedbackAttachment>): void;
+  addAttachments(value?: FeedbackAttachment, index?: number): FeedbackAttachment;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FeedbackRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: FeedbackRequest): FeedbackRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: FeedbackRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FeedbackRequest;
+  static deserializeBinaryFromReader(message: FeedbackRequest, reader: jspb.BinaryReader): FeedbackRequest;
+}
+
+export namespace FeedbackRequest {
+  export type AsObject = {
+    feedbackType: FeedbackTypeMap[keyof FeedbackTypeMap],
+    description: string,
+    email: string,
+    attachmentsList: Array<FeedbackAttachment.AsObject>,
+  }
+}
+
+export class FeedbackAttachment extends jspb.Message {
+  getContentType(): string;
+  setContentType(value: string): void;
+
+  getData(): Uint8Array | string;
+  getData_asU8(): Uint8Array;
+  getData_asB64(): string;
+  setData(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FeedbackAttachment.AsObject;
+  static toObject(includeInstance: boolean, msg: FeedbackAttachment): FeedbackAttachment.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: FeedbackAttachment, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FeedbackAttachment;
+  static deserializeBinaryFromReader(message: FeedbackAttachment, reader: jspb.BinaryReader): FeedbackAttachment;
+}
+
+export namespace FeedbackAttachment {
+  export type AsObject = {
+    contentType: string,
+    data: Uint8Array | string,
+  }
+}
+
+export class FeedbackResponse extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): FeedbackResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: FeedbackResponse): FeedbackResponse.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: FeedbackResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): FeedbackResponse;
+  static deserializeBinaryFromReader(message: FeedbackResponse, reader: jspb.BinaryReader): FeedbackResponse;
+}
+
+export namespace FeedbackResponse {
+  export type AsObject = {
+  }
+}
+
 export interface MatchStatusMap {
   MATCH_STATUS_UNKNOWN: 0;
   MATCH_STATUS_AVAILABLE: 1;
@@ -165,4 +243,12 @@ export interface MatchStatusMap {
 }
 
 export const MatchStatus: MatchStatusMap;
+
+export interface FeedbackTypeMap {
+  FEEDBACK_TYPE_UNKNOWN: 0;
+  FEEDBACK_TYPE_BUG: 1;
+  FEEDBACK_TYPE_SUGGESTION: 2;
+}
+
+export const FeedbackType: FeedbackTypeMap;
 

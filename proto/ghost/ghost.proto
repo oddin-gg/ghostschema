@@ -46,7 +46,28 @@ message MatchStatusResponse {
   MatchStatus match_status = 1;
 }
 
+message FeedbackRequest {
+  FeedbackType feedback_type = 1;
+  string description = 2;
+  optional string email = 3;
+  repeated FeedbackAttachment attachments = 4;
+}
+
+enum FeedbackType {
+  FEEDBACK_TYPE_UNKNOWN = 0;
+  FEEDBACK_TYPE_BUG = 1;
+  FEEDBACK_TYPE_SUGGESTION = 2;
+}
+
+message FeedbackAttachment {
+  string content_type = 2;  // e.g., "application/pdf"
+  bytes data = 3;           // raw file bytes
+}
+
+message FeedbackResponse {}
+
 service Ghost {
   rpc GetMatchInfo(MatchInfoRequest) returns (MatchInfoResponse);
   rpc GetMatchStatus(MatchStatusRequest) returns (MatchStatusResponse);
+  rpc SendFeedback(FeedbackRequest) returns (FeedbackResponse);
 }

@@ -5,7 +5,7 @@ import warnings
 
 from ghost_schema.ghost import ghost_pb2 as ghost_dot_ghost__pb2
 
-GRPC_GENERATED_VERSION = '1.74.0'
+GRPC_GENERATED_VERSION = '1.76.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in ghost/ghost_pb2_grpc.py depends on'
+        + ' but the generated code in ghost/ghost_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -44,6 +44,11 @@ class GhostStub(object):
                 request_serializer=ghost_dot_ghost__pb2.MatchStatusRequest.SerializeToString,
                 response_deserializer=ghost_dot_ghost__pb2.MatchStatusResponse.FromString,
                 _registered_method=True)
+        self.SendFeedback = channel.unary_unary(
+                '/ghost.Ghost/SendFeedback',
+                request_serializer=ghost_dot_ghost__pb2.FeedbackRequest.SerializeToString,
+                response_deserializer=ghost_dot_ghost__pb2.FeedbackResponse.FromString,
+                _registered_method=True)
 
 
 class GhostServicer(object):
@@ -61,6 +66,12 @@ class GhostServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def SendFeedback(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_GhostServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -73,6 +84,11 @@ def add_GhostServicer_to_server(servicer, server):
                     servicer.GetMatchStatus,
                     request_deserializer=ghost_dot_ghost__pb2.MatchStatusRequest.FromString,
                     response_serializer=ghost_dot_ghost__pb2.MatchStatusResponse.SerializeToString,
+            ),
+            'SendFeedback': grpc.unary_unary_rpc_method_handler(
+                    servicer.SendFeedback,
+                    request_deserializer=ghost_dot_ghost__pb2.FeedbackRequest.FromString,
+                    response_serializer=ghost_dot_ghost__pb2.FeedbackResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -129,6 +145,33 @@ class Ghost(object):
             '/ghost.Ghost/GetMatchStatus',
             ghost_dot_ghost__pb2.MatchStatusRequest.SerializeToString,
             ghost_dot_ghost__pb2.MatchStatusResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SendFeedback(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ghost.Ghost/SendFeedback',
+            ghost_dot_ghost__pb2.FeedbackRequest.SerializeToString,
+            ghost_dot_ghost__pb2.FeedbackResponse.FromString,
             options,
             channel_credentials,
             insecure,

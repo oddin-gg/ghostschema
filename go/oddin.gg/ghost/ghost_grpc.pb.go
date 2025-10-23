@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	Ghost_GetMatchInfo_FullMethodName   = "/ghost.Ghost/GetMatchInfo"
 	Ghost_GetMatchStatus_FullMethodName = "/ghost.Ghost/GetMatchStatus"
+	Ghost_SendFeedback_FullMethodName   = "/ghost.Ghost/SendFeedback"
 )
 
 // GhostClient is the client API for Ghost service.
@@ -29,6 +30,7 @@ const (
 type GhostClient interface {
 	GetMatchInfo(ctx context.Context, in *MatchInfoRequest, opts ...grpc.CallOption) (*MatchInfoResponse, error)
 	GetMatchStatus(ctx context.Context, in *MatchStatusRequest, opts ...grpc.CallOption) (*MatchStatusResponse, error)
+	SendFeedback(ctx context.Context, in *FeedbackRequest, opts ...grpc.CallOption) (*FeedbackResponse, error)
 }
 
 type ghostClient struct {
@@ -59,12 +61,23 @@ func (c *ghostClient) GetMatchStatus(ctx context.Context, in *MatchStatusRequest
 	return out, nil
 }
 
+func (c *ghostClient) SendFeedback(ctx context.Context, in *FeedbackRequest, opts ...grpc.CallOption) (*FeedbackResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FeedbackResponse)
+	err := c.cc.Invoke(ctx, Ghost_SendFeedback_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GhostServer is the server API for Ghost service.
 // All implementations must embed UnimplementedGhostServer
 // for forward compatibility.
 type GhostServer interface {
 	GetMatchInfo(context.Context, *MatchInfoRequest) (*MatchInfoResponse, error)
 	GetMatchStatus(context.Context, *MatchStatusRequest) (*MatchStatusResponse, error)
+	SendFeedback(context.Context, *FeedbackRequest) (*FeedbackResponse, error)
 	mustEmbedUnimplementedGhostServer()
 }
 
@@ -80,6 +93,9 @@ func (UnimplementedGhostServer) GetMatchInfo(context.Context, *MatchInfoRequest)
 }
 func (UnimplementedGhostServer) GetMatchStatus(context.Context, *MatchStatusRequest) (*MatchStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMatchStatus not implemented")
+}
+func (UnimplementedGhostServer) SendFeedback(context.Context, *FeedbackRequest) (*FeedbackResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendFeedback not implemented")
 }
 func (UnimplementedGhostServer) mustEmbedUnimplementedGhostServer() {}
 func (UnimplementedGhostServer) testEmbeddedByValue()               {}
@@ -138,6 +154,24 @@ func _Ghost_GetMatchStatus_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Ghost_SendFeedback_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FeedbackRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GhostServer).SendFeedback(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ghost_SendFeedback_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GhostServer).SendFeedback(ctx, req.(*FeedbackRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Ghost_ServiceDesc is the grpc.ServiceDesc for Ghost service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -152,6 +186,10 @@ var Ghost_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMatchStatus",
 			Handler:    _Ghost_GetMatchStatus_Handler,
+		},
+		{
+			MethodName: "SendFeedback",
+			Handler:    _Ghost_SendFeedback_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
