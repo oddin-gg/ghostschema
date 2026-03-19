@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11ghost/ghost.proto\x12\x05ghost\"%\n\x10MatchInfoRequest\x12\x11\n\tmatch_urn\x18\x01 \x01(\t\"\x8b\x01\n\x11MatchInfoResponse\x12*\n\x03\x63s2\x18\x01 \x01(\x0b\x32\x1b.ghost.CS2MatchInfoResponseH\x00\x12.\n\x05\x64ota2\x18\x02 \x01(\x0b\x32\x1d.ghost.Dota2MatchInfoResponseH\x00\x12\x0c\n\x04host\x18\x03 \x01(\tB\x0c\n\nmatch_info\"i\n\x14\x43S2MatchInfoResponse\x12\x10\n\x08map_name\x18\x02 \x01(\t\x12\x16\n\x0emap_asset_name\x18\x03 \x01(\t\x12\x14\n\x0cgame_version\x18\x04 \x01(\t\x12\x11\n\tasset_url\x18\x05 \x01(\t\"A\n\x16\x44ota2MatchInfoResponse\x12\x14\n\x0cgame_version\x18\x02 \x01(\t\x12\x11\n\tasset_url\x18\x03 \x01(\t\"\'\n\x12MatchStatusRequest\x12\x11\n\tmatch_urn\x18\x01 \x01(\t\"?\n\x13MatchStatusResponse\x12(\n\x0cmatch_status\x18\x01 \x01(\x0e\x32\x12.ghost.MatchStatus*a\n\x0bMatchStatus\x12\x18\n\x14MATCH_STATUS_UNKNOWN\x10\x00\x12\x1a\n\x16MATCH_STATUS_AVAILABLE\x10\x01\x12\x1c\n\x18MATCH_STATUS_UNAVAILABLE\x10\x02\x32\x93\x01\n\x05Ghost\x12\x41\n\x0cGetMatchInfo\x12\x17.ghost.MatchInfoRequest\x1a\x18.ghost.MatchInfoResponse\x12G\n\x0eGetMatchStatus\x12\x19.ghost.MatchStatusRequest\x1a\x1a.ghost.MatchStatusResponseB!\n\x0f\x63om.oddin.ghostZ\x0eoddin.gg/ghostb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11ghost/ghost.proto\x12\x05ghost\"A\n\x10MatchInfoRequest\x12\x11\n\tmatch_urn\x18\x01 \x01(\t\x12\x11\n\x04lang\x18\x02 \x01(\tH\x00\x88\x01\x01\x42\x07\n\x05_lang\"\x8b\x01\n\x11MatchInfoResponse\x12*\n\x03\x63s2\x18\x01 \x01(\x0b\x32\x1b.ghost.CS2MatchInfoResponseH\x00\x12.\n\x05\x64ota2\x18\x02 \x01(\x0b\x32\x1d.ghost.Dota2MatchInfoResponseH\x00\x12\x0c\n\x04host\x18\x03 \x01(\tB\x0c\n\nmatch_info\"i\n\x14\x43S2MatchInfoResponse\x12\x10\n\x08map_name\x18\x02 \x01(\t\x12\x16\n\x0emap_asset_name\x18\x03 \x01(\t\x12\x14\n\x0cgame_version\x18\x04 \x01(\t\x12\x11\n\tasset_url\x18\x05 \x01(\t\"A\n\x16\x44ota2MatchInfoResponse\x12\x14\n\x0cgame_version\x18\x02 \x01(\t\x12\x11\n\tasset_url\x18\x03 \x01(\t\"\'\n\x12MatchStatusRequest\x12\x11\n\tmatch_urn\x18\x01 \x01(\t\"?\n\x13MatchStatusResponse\x12(\n\x0cmatch_status\x18\x01 \x01(\x0e\x32\x12.ghost.MatchStatus*a\n\x0bMatchStatus\x12\x18\n\x14MATCH_STATUS_UNKNOWN\x10\x00\x12\x1a\n\x16MATCH_STATUS_AVAILABLE\x10\x01\x12\x1c\n\x18MATCH_STATUS_UNAVAILABLE\x10\x02\x32\x93\x01\n\x05Ghost\x12\x41\n\x0cGetMatchInfo\x12\x17.ghost.MatchInfoRequest\x1a\x18.ghost.MatchInfoResponse\x12G\n\x0eGetMatchStatus\x12\x19.ghost.MatchStatusRequest\x1a\x1a.ghost.MatchStatusResponseB!\n\x0f\x63om.oddin.ghostZ\x0eoddin.gg/ghostb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,20 +32,20 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'ghost.ghost_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\017com.oddin.ghostZ\016oddin.gg/ghost'
-  _globals['_MATCHSTATUS']._serialized_start=489
-  _globals['_MATCHSTATUS']._serialized_end=586
+  _globals['_MATCHSTATUS']._serialized_start=517
+  _globals['_MATCHSTATUS']._serialized_end=614
   _globals['_MATCHINFOREQUEST']._serialized_start=28
-  _globals['_MATCHINFOREQUEST']._serialized_end=65
-  _globals['_MATCHINFORESPONSE']._serialized_start=68
-  _globals['_MATCHINFORESPONSE']._serialized_end=207
-  _globals['_CS2MATCHINFORESPONSE']._serialized_start=209
-  _globals['_CS2MATCHINFORESPONSE']._serialized_end=314
-  _globals['_DOTA2MATCHINFORESPONSE']._serialized_start=316
-  _globals['_DOTA2MATCHINFORESPONSE']._serialized_end=381
-  _globals['_MATCHSTATUSREQUEST']._serialized_start=383
-  _globals['_MATCHSTATUSREQUEST']._serialized_end=422
-  _globals['_MATCHSTATUSRESPONSE']._serialized_start=424
-  _globals['_MATCHSTATUSRESPONSE']._serialized_end=487
-  _globals['_GHOST']._serialized_start=589
-  _globals['_GHOST']._serialized_end=736
+  _globals['_MATCHINFOREQUEST']._serialized_end=93
+  _globals['_MATCHINFORESPONSE']._serialized_start=96
+  _globals['_MATCHINFORESPONSE']._serialized_end=235
+  _globals['_CS2MATCHINFORESPONSE']._serialized_start=237
+  _globals['_CS2MATCHINFORESPONSE']._serialized_end=342
+  _globals['_DOTA2MATCHINFORESPONSE']._serialized_start=344
+  _globals['_DOTA2MATCHINFORESPONSE']._serialized_end=409
+  _globals['_MATCHSTATUSREQUEST']._serialized_start=411
+  _globals['_MATCHSTATUSREQUEST']._serialized_end=450
+  _globals['_MATCHSTATUSRESPONSE']._serialized_start=452
+  _globals['_MATCHSTATUSRESPONSE']._serialized_end=515
+  _globals['_GHOST']._serialized_start=617
+  _globals['_GHOST']._serialized_end=764
 # @@protoc_insertion_point(module_scope)
