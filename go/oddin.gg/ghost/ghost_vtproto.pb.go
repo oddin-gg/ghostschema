@@ -25,6 +25,9 @@ func (this *MatchInfoRequest) EqualVT(that *MatchInfoRequest) bool {
 	if this.MatchUrn != that.MatchUrn {
 		return false
 	}
+	if p, q := this.Lang, that.Lang; (p == nil && q != nil) || (p != nil && (q == nil || *p != *q)) {
+		return false
+	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
 

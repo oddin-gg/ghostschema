@@ -7,6 +7,7 @@ option java_package = "com.oddin.ghost";
 
 message MatchInfoRequest {
   string match_urn = 1;
+  optional string lang = 2;
 }
 
 message MatchInfoResponse {

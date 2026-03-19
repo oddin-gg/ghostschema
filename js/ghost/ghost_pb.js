@@ -187,7 +187,8 @@ proto.ghost.MatchInfoRequest.prototype.toObject = function(opt_includeInstance) 
  */
 proto.ghost.MatchInfoRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-matchUrn: jspb.Message.getFieldWithDefault(msg, 1, "")
+matchUrn: jspb.Message.getFieldWithDefault(msg, 1, ""),
+lang: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -228,6 +229,10 @@ proto.ghost.MatchInfoRequest.deserializeBinaryFromReader = function(msg, reader)
       var value = /** @type {string} */ (reader.readString());
       msg.setMatchUrn(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setLang(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -264,6 +269,13 @@ proto.ghost.MatchInfoRequest.serializeBinaryToWriter = function(message, writer)
       f
     );
   }
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -282,6 +294,42 @@ proto.ghost.MatchInfoRequest.prototype.getMatchUrn = function() {
  */
 proto.ghost.MatchInfoRequest.prototype.setMatchUrn = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string lang = 2;
+ * @return {string}
+ */
+proto.ghost.MatchInfoRequest.prototype.getLang = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.ghost.MatchInfoRequest} returns this
+ */
+proto.ghost.MatchInfoRequest.prototype.setLang = function(value) {
+  return jspb.Message.setField(this, 2, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.ghost.MatchInfoRequest} returns this
+ */
+proto.ghost.MatchInfoRequest.prototype.clearLang = function() {
+  return jspb.Message.setField(this, 2, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.ghost.MatchInfoRequest.prototype.hasLang = function() {
+  return jspb.Message.getField(this, 2) != null;
 };
 
 

@@ -7,6 +7,11 @@ export class MatchInfoRequest extends jspb.Message {
   getMatchUrn(): string;
   setMatchUrn(value: string): void;
 
+  hasLang(): boolean;
+  clearLang(): void;
+  getLang(): string;
+  setLang(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MatchInfoRequest.AsObject;
   static toObject(includeInstance: boolean, msg: MatchInfoRequest): MatchInfoRequest.AsObject;
@@ -20,6 +25,7 @@ export class MatchInfoRequest extends jspb.Message {
 export namespace MatchInfoRequest {
   export type AsObject = {
     matchUrn: string,
+    lang: string,
   }
 }
 
