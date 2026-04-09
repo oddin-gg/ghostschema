@@ -1,0 +1,372 @@
+syntax = "proto3";
+
+package bragi;
+
+option go_package = "oddin.gg/bragi";
+option java_package = "com.oddin.bragi";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "bragi/common.proto";
+
+
+message ValorantMatchMessage {
+  message Payload {
+    oneof payload {
+      // Initial snapshot
+      ValorantMatchSnapshot snapshot = 1;
+
+      // Particular updates which are applied on property match_state in MatchState.
+      ValorantMatchUpdate update = 2;
+    }
+  }
+
+  string match_urn = 1;
+  uint64 sequence = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  DataStatus data_status = 4;
+  Payload payload = 5;
+}
+
+message ValorantMatchSnapshot {
+  string match_urn = 1;
+  uint64 sequence = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  DataStatus data_status = 4;
+  repeated Announcement announcements = 5;
+  ValorantMatchState match_state = 6;
+  Tournament tournament  = 7;
+}
+
+message ValorantMatchUpdate {
+  message Payload {
+    oneof payload {
+      ValorantMatchState match_state = 1;
+      ValorantMatchStatePartialUpdates partial_updates = 2;
+    }
+  }
+
+  Payload payload = 1;
+}
+
+message ValorantMatchStatePartialUpdates {
+
+  repeated ValorantMatchStatePartialUpdate updates = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+message ValorantMatchStatePartialUpdate {
+
+  oneof update {
+    // Replaces "score" property in ValorantMatchState.
+    ValorantMatchScoreState score = 1;
+
+    // Replaces "current_map" property in ValorantMatchState. To minimalize issues with incorrect updates application
+    // on current_map, server sends ValorantMatchStatePartialUpdate with ValorantMapState in periodic time set by customer.
+    ValorantCurrentMapState current_map = 2;
+
+    // Apply partial update on "current_map" property in ValorantMatchState.
+    ValorantCurrentMapStatePartialUpdate current_map_partial_update = 3;
+  }
+}
+
+message ValorantMatchState {
+  string match_urn = 1;
+  BestOfType match_type = 2;
+  Team home_team = 3;
+  Team away_team = 4;
+  ValorantMatchScoreState score = 5;
+  MatchStatusType match_status = 6;
+  ValorantCurrentMapState current_map = 7;
+}
+
+message ValorantMatchScoreState {
+  uint32 home_score = 1;
+  uint32 away_score = 2;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+message ValorantCurrentMapStatePartialUpdate {
+  oneof update {
+    // Replaces "score" property in ValorantCurrentMapState.
+    ValorantMapScoreState score = 1;
+
+    // Replaces "current_round" property in ValorantCurrentMapState.
+    ValorantCurrentRoundState current_round = 2;
+
+    // Apply partial update on property "current_round" in ValorantCurrentMapState.
+    ValorantCurrentRoundStatePartialUpdate current_round_partial_update = 3;
+
+    // Replaces whole value under given key in teams hash map property in ValorantCurrentMapState.
+    ValorantTeamCurrentMapState team_current_map_state = 4;
+
+    // Apply partial update on value under given key in teams hash map property in ValorantCurrentMapState.
+    ValorantTeamCurrentMapStatePartialUpdate team_current_map_partial_update = 5;
+
+    // Replaces "previous_rounds" property in ValorantCurrentMapState.
+    ValorantPreviousRoundsState previous_rounds = 6;
+  }
+}
+
+message ValorantCurrentMapState {
+  uint32 map_order = 1;
+  bool map_paused = 2;
+  string map_name = 3;
+  optional string win_team_urn = 4;
+  ValorantMapScoreState score = 5;
+  ValorantCurrentRoundState current_round = 6;
+  map<string, ValorantTeamCurrentMapState> teams = 7;
+  ValorantPreviousRoundsState previous_rounds = 8;
+}
+
+message ValorantMapScoreState {
+  uint32 home_score = 1;
+  uint32 away_score = 2;
+}
+
+message ValorantPreviousRoundsState {
+  repeated ValorantPreviousRound rounds = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+message ValorantTeamCurrentMapStatePartialUpdate {
+  message Payload {
+    oneof payload {
+      // Replaces whole value under given key in players hash map property in ValorantTeamCurrentMapState.
+      ValorantPlayerCurrentMapState player_current_map_state = 1;
+
+      // Apply partial update on value under given key in players hash map property in ValorantTeamCurrentMapState.
+      ValorantPlayerCurrentMapStatePartialUpdate player_current_map_partial_update = 2;
+    }
+  }
+
+  string team_urn = 1;
+  Payload payload = 2;
+}
+
+message ValorantTeamCurrentMapState {
+  string team_urn = 1;
+  ValorantSide side = 2;
+  map<string, ValorantPlayerCurrentMapState> players = 3;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+message ValorantPlayerCurrentMapStatePartialUpdate {
+  message Payload {
+    oneof payload {
+      // Replaces "player_info" property in ValorantPlayerCurrentMapState.
+      ValorantPlayerInfoState player_info = 1;
+
+      // Replaces "abilities" property in ValorantPlayerCurrentMapState.
+      ValorantAbilitiesState abilities = 2;
+
+      // Replaces "statistics" property in ValorantPlayerCurrentMapState.
+      ValorantPlayerCurrentMapStatisticsState statistics = 3;
+    }
+  }
+
+  string player_urn = 1;
+  Payload payload = 2;
+}
+
+message ValorantPlayerCurrentMapState{
+  string player_urn = 1;
+  string agent_urn = 2;
+  ValorantPlayerInfoState player_info = 3;
+  ValorantAbilitiesState abilities = 4;
+  ValorantPlayerCurrentMapStatisticsState statistics = 5;
+}
+
+message ValorantPlayerCurrentMapStatisticsState {
+  string player_urn = 1;
+  uint32 kills = 2;
+  uint32 deaths = 3;
+  uint32 assists = 4;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+message ValorantCurrentRoundStatePartialUpdate {
+  oneof update {
+
+    // Replaces "round_info" property in ValorantCurrentRoundState.
+    ValorantRoundInfoState round_info = 1;
+
+    // Replaces "time" property in ValorantCurrentRoundState.
+    ValorantCurrentRoundTimeState time = 2;
+
+    // Replaces "spike" property in ValorantCurrentRoundState.
+    ValorantCurrentRoundTeamSpikeState spike = 3;
+
+    // Replaces whole value under given key in teams hash map property in ValorantCurrentRoundState.
+    ValorantTeamCurrentRoundState team_current_round_state = 4;
+
+    // Apply partial update on value under given key in teams hash map property in ValorantCurrentRoundState.
+    ValorantTeamCurrentRoundStatePartialUpdate team_current_round_partial_update = 5;
+  }
+}
+
+message ValorantCurrentRoundState {
+  ValorantRoundInfoState round_info = 1;
+  ValorantCurrentRoundTimeState time = 2;
+  ValorantCurrentRoundTeamSpikeState spike = 3;
+  map<string, ValorantTeamCurrentRoundState> teams = 4;
+}
+
+message ValorantRoundInfoState {
+  uint32 number = 1;
+  ValorantRoundPhase phase = 2;
+}
+
+message ValorantCurrentRoundTimeState {
+  google.protobuf.Duration time_remaining = 1;
+}
+
+message ValorantCurrentRoundTeamSpikeState{
+  ValorantSpikeState state = 1;
+  google.protobuf.Duration time_to_defused = 2;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+message ValorantTeamCurrentRoundStatePartialUpdate {
+  message Payload {
+    oneof payload {
+      // Replaces whole value under given key in players hash map property in ValorantTeamCurrentRoundState.
+      ValorantPlayerCurrentRoundState player_current_round_state = 3;
+
+      // Apply partial update on value under given key in players hash map property in ValorantTeamCurrentRoundState.
+      ValorantPlayerCurrentRoundStatePartialUpdate player_current_round_partial_update = 2;
+    }
+  }
+
+  string team_urn = 1;
+  Payload payload = 2;
+}
+
+message ValorantTeamCurrentRoundState {
+  string team_urn = 1;
+  ValorantSide side = 2;
+  map<string, ValorantPlayerCurrentRoundState> players = 3;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+message ValorantPlayerCurrentRoundStatePartialUpdate {
+  message Payload {
+    oneof payload {
+      // Replaces "player_info" property in ValorantPlayerCurrentRoundState.
+      ValorantPlayerInfoState player_info = 1;
+
+      // Replaces "statistics" property in ValorantPlayerCurrentRoundState.
+      ValorantPlayerCurrentRoundStatisticsState statistics = 2;
+
+      // Replaces "weapons" property in ValorantPlayerCurrentRoundState.
+      ValorantWeaponsState weapons = 3;
+
+      // Replaces "position" property in ValorantPlayerCurrentRoundState.
+      ValorantPositionState position = 4;
+    }
+  }
+
+  string player_urn = 1;
+  Payload payload = 2;
+}
+
+message ValorantPlayerCurrentRoundState {
+  string player_urn = 1;
+  ValorantPlayerInfoState player_info = 2;
+  ValorantPlayerCurrentRoundStatisticsState statistics = 3;
+  ValorantWeaponsState weapons = 4;
+  ValorantPositionState position = 5;
+}
+
+message ValorantPlayerCurrentRoundStatisticsState {
+  string player_urn = 1;
+  bool is_alive = 2;
+}
+
+message ValorantAbilitiesState{
+  string player_urn = 1;
+  repeated ValorantAbility abilities = 2;
+}
+
+message ValorantWeaponsState{
+  string player_urn = 1;
+  repeated ValorantWeapon weapons = 2;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+message ValorantPlayerInfoState{
+  string player_urn = 1;
+  uint32 slot_id = 2;
+  string ext_name = 3;
+  string ext_id = 4;
+}
+
+message ValorantPositionState {
+  string player_urn = 1;
+  float x = 2;
+  float y = 3;
+}
+
+message ValorantPreviousRound {
+  uint32 number = 1;
+  ValorantRoundOutcome outcome = 2;
+  bool home_won = 3;
+}
+
+
+message ValorantWeapon {
+  string id = 1;
+}
+
+message ValorantAbility {
+  string id = 1;
+  bool ready = 2;
+  bool is_ultimate = 3;
+}
+
+enum ValorantUltimateState {
+  VALORANT_ULTIMATE_STATE__UNSPECIFIED = 0;
+  VALORANT_ULTIMATE_STATE_READY = 1;
+  VALORANT_ULTIMATE_STATE_NOT_READY = 2;
+}
+
+enum ValorantSide {
+  VALORANT_SIDE_UNSPECIFIED = 0;
+  VALORANT_SIDE_DEFENDERS = 1;
+  VALORANT_SIDE_ATTACKERS = 2;
+}
+
+enum ValorantRoundOutcome {
+  VALORANT_ROUND_OUTCOME_UNSPECIFIED = 0;
+  VALORANT_ROUND_OUTCOME_DEFENDERS_WIN_ELIMINATION = 1;
+  VALORANT_ROUND_OUTCOME_DEFENDERS_WIN_TIMEOUT = 2;
+  VALORANT_ROUND_OUTCOME_DEFENDERS_WIN_DEFUSE = 3;
+  VALORANT_ROUND_OUTCOME_ATTACKERS_WIN_ELIMINATION = 4;
+  VALORANT_ROUND_OUTCOME_ATTACKERS_WIN_EXPLODE = 5;
+}
+
+enum ValorantRoundPhase {
+  VALORANT_ROUND_PHASE_UNSPECIFIED = 0;
+  VALORANT_ROUND_PHASE_BUY_PHASE = 1;
+  VALORANT_ROUND_PHASE_RUNNING = 2;
+  VALORANT_ROUND_PHASE_OVER = 3;
+}
+
+enum ValorantSpikeState {
+  VALORANT_SPIKE_STATE_UNSPECIFIED = 0;
+  VALORANT_SPIKE_STATE_CARRIED = 1;
+  VALORANT_SPIKE_STATE_DROPPED = 2;
+  VALORANT_SPIKE_STATE_PLANTING = 3;
+  VALORANT_SPIKE_STATE_DEFUSING = 4;
+  VALORANT_SPIKE_STATE_PLANTED = 5;
+  VALORANT_SPIKE_STATE_EXPLODED = 6;
+  VALORANT_SPIKE_STATE_DEFUSED = 7;
+}

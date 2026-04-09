@@ -1,0 +1,262 @@
+syntax = "proto3";
+
+package bragi;
+
+option go_package = "oddin.gg/bragi";
+option java_package = "com.oddin.bragi";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "bragi/common.proto";
+
+message RushCricketMatchMessage {
+  message Payload {
+    oneof payload {
+      // Initial snapshot.
+      RushCricketMatchSnapshot snapshot = 1;
+
+      // Particular updates which are applied on property match_state in MatchState.
+      RushCricketMatchUpdate update = 2;
+    }
+  }
+
+  // Match urn.
+  string match_urn = 1;
+  // Message sequence.
+  uint64 sequence = 2;
+  // Message timestamp.
+  google.protobuf.Timestamp timestamp = 3;
+  // Data status.
+  DataStatus data_status = 4;
+  // Message payload.
+  Payload payload = 5;
+}
+
+message RushCricketMatchSnapshot {
+  // Match urn.
+  string match_urn = 1;
+  // Message sequence.
+  uint64 sequence = 2;
+  // Message timestamp.
+  google.protobuf.Timestamp timestamp = 3;
+  // Data status.
+  DataStatus data_status = 4;
+  // Control announcements.
+  repeated Announcement announcements = 5;
+  // Match state.
+  RushCricketMatchState match_state = 6;
+  // Tournament details
+  Tournament tournament  = 7;
+}
+
+message RushCricketMatchUpdate {
+  message Payload {
+    oneof payload {
+      // Complete match state.
+      RushCricketMatchState match_state = 1;
+      // Partial update.
+      RushCricketMatchStatePartialUpdates partial_updates = 2;
+    }
+  }
+
+  // Update payload.
+  Payload payload = 1;
+}
+
+message RushCricketMatchStatePartialUpdates {
+  // Partial updates.
+  repeated RushCricketMatchStatePartialUpdate updates = 1;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+message RushCricketMatchStatePartialUpdate {
+  oneof update {
+    // Replaces "score" property in RushCricketMatchState.
+    RushCricketMatchScoreState score = 1;
+
+    // Replaces "current_inning" property in RushCricketMatchState.
+    RushCricketCurrentInningState current_inning = 2;
+
+    // Apply partial update on "current_inning" property in RushCricketMatchState.
+    RushCricketCurrentInningStatePartialUpdate current_inning_partial_update = 3;
+
+    // Replaces "timeline" property in RushCricketMatchState.
+    RushCricketTimelineState timeline = 4;
+  }
+}
+
+message RushCricketMatchState {
+  // Match urn.
+  string match_urn = 1;
+  // BO type.
+  BestOfType match_type = 2;
+  // Home team.
+  Team home_team = 3;
+  // Away team.
+  Team away_team = 4;
+  // Match score - number of maps won.
+  RushCricketMatchScoreState score = 5;
+  // Match status.
+  MatchStatusType match_status = 6;
+  // Timeline state.
+  RushCricketTimelineState timeline = 7;
+  // Current inning state.
+  RushCricketCurrentInningState current_inning = 8;
+  // Winning team urn.
+  string win_team_urn = 9;
+}
+
+message RushCricketMatchScoreState {
+  // Number of maps won by home team.
+  uint32 home_score = 1;
+  // Number of maps won by away team.
+  uint32 away_score = 2;
+}
+
+message RushCricketCurrentMapScoreState {
+  // Number of home runs.
+  uint32 home_runs = 1;
+  // Number of away runs.
+  uint32 away_runs = 2;
+}
+
+message RushCricketTimelineState {
+  // Timeline events.
+  repeated RushCricketTimelineEvent events = 1;
+}
+
+message RushCricketTimelineEvent {
+  // Team urn.
+  string team_urn = 1;
+  // Event type.
+  RushCricketEventType event_type = 2;
+  // Ball state details.
+  RushCricketBallState ball_state = 3;
+  // Runs scored in this event
+  uint32 runs = 4;
+  // Boundary type if applicable
+  RushCricketBoundaryRun boundary_run = 5;
+  // Bowler error if applicable
+  RushCricketBowlerError bowler_error = 6;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+
+message RushCricketCurrentInningStatePartialUpdate {
+  oneof update {
+    // Replaces "number" property in RushCricketCurrentInningState.
+    uint32 over = 1;
+
+    // Replaces "ball" property in RushCricketCurrentInningState.
+    uint32 ball = 2;
+
+    // Replaces "runs" property in RushCricketCurrentInningState.
+    uint32 runs = 3;
+
+    // Replaces "overs_played" property in RushCricketCurrentInningState.
+    float overs_played = 4;
+
+    // Replaces "target" property in RushCricketCurrentInningState.
+    RushCricketTarget target = 5;
+
+    // Apply partial update on team state in RushCricketCurrentInningState.
+    RushCricketTeamCurrentInningStatePartialUpdate team_current_inning_partial_update = 6;
+  }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+message RushCricketTeamCurrentInningStatePartialUpdate {
+  message Payload {
+    oneof payload {
+      // Replaces team state in RushCricketCurrentInningState.
+      RushCricketTeamCurrentInningState team_current_inning_state = 1;
+    }
+  }
+
+  // Team urn.
+  string team_urn = 1;
+
+  // Update payload.
+  Payload payload = 2;
+}
+
+message RushCricketPlayerCurrentMapState{
+  // Player urn.
+  string player_urn = 1;
+  // Player ext name.
+  string ext_name = 2;
+}
+
+enum RushCricketEventType {
+  RUSH_CRICKET_EVENT_TYPE_UNSPECIFIED = 0;
+  RUSH_CRICKET_EVENT_TYPE_BOUNDARY_FOUR = 1;
+  RUSH_CRICKET_EVENT_TYPE_BOUNDARY_SIX = 2;
+  RUSH_CRICKET_EVENT_TYPE_WIDE_BALL = 3;
+  RUSH_CRICKET_EVENT_TYPE_NO_BALL = 4;
+  RUSH_CRICKET_EVENT_TYPE_WICKET = 5;
+  RUSH_CRICKET_EVENT_TYPE_PERIOD_CHANGE = 6;
+}
+
+enum RushCricketPeriod {
+  RUSH_CRICKET_PERIOD_UNSPECIFIED = 0;
+  RUSH_CRICKET_PERIOD_FIRST = 1;
+  RUSH_CRICKET_PERIOD_SECOND = 2;
+}
+
+message RushCricketBallState {
+  // Inning number
+  uint32 inning = 1;
+  // Over number
+  uint32 over = 2;
+  // Ball number
+  uint32 ball = 3;
+  // If this was an extra ball
+  bool is_extra = 4;
+  // Ball order within inning
+  uint32 ball_order_within_inning = 5;
+}
+
+enum RushCricketBoundaryRun {
+  RUSH_CRICKET_BOUNDARY_RUN_UNSPECIFIED = 0;
+  RUSH_CRICKET_BOUNDARY_RUN_FOUR = 1;
+  RUSH_CRICKET_BOUNDARY_RUN_SIX = 2;
+}
+
+enum RushCricketBowlerError {
+  RUSH_CRICKET_BOWLER_ERROR_UNSPECIFIED = 0;
+  RUSH_CRICKET_BOWLER_ERROR_NO_BALL = 1;
+  RUSH_CRICKET_BOWLER_ERROR_WIDE = 2;
+}
+
+message RushCricketCurrentInningState {
+  uint32 number = 1;
+  uint32 over = 2;
+  uint32 ball = 3;
+  string batting_team_urn = 4;
+  uint32 runs = 5;
+  float overs_played = 6;
+  bool game_paused = 7;
+  map<string, RushCricketTeamCurrentInningState> teams = 8;
+  RushCricketTarget target = 9;
+}
+
+message RushCricketTarget {
+  string team_urn = 1;
+  uint32 runs = 2;
+  float overs = 3;
+}
+
+message RushCricketTeamCurrentInningState {
+
+  uint32 runs = 1;
+  uint32 wickets = 2;
+  uint32 boundaries_four = 3;
+  uint32 boundaries_six = 4;
+  uint32 wide_balls = 5;
+  uint32 no_balls = 6;
+  float overs_played = 7;
+  RushCricketPlayerCurrentMapState player = 8;
+}
