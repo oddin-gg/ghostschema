@@ -11,20 +11,22 @@ Automated gRPC integration tests for Ghost using [K6](https://k6.io/). Tests use
 Auth tokens must be supplied via environment variables:
 
 ```bash
+cd k6
 k6 run \
   -e BRAGI_TOKEN=your-bragi-token \
   -e GHOST_TOKEN=your-ghost-token \
-  k6/ghost_match_status.js
+  ghost_match_status.js
 ```
 
 To also override endpoints:
 
 ```bash
+cd k6
 k6 run \
   -e BRAGI_TOKEN=your-bragi-token \
   -e GHOST_TOKEN=your-ghost-token \
   -e GHOST_ADDR=your-ghost-host:443 \
-  k6/ghost_match_status.js
+  ghost_match_status.js
 ```
 
 ### Test files

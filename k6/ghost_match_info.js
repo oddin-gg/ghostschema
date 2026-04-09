@@ -70,7 +70,8 @@ export default function () {
     check(infoRes, {
       '[CS2Info] Status is OK or NOT_FOUND': (r) =>
         r.status === grpc.StatusOK || r.status === grpc.StatusNotFound,
-      '[CS2Info] Response message is not null': (r) => r.message != null,
+      '[CS2Info] Response message is not null when status is OK': (r) =>
+        r.status !== grpc.StatusOK || r.message != null,
     });
 
     if (infoRes.status === grpc.StatusOK && infoRes.message) {
@@ -97,7 +98,8 @@ export default function () {
     check(langRes, {
       '[CS2InfoLang] Status is OK or NOT_FOUND': (r) =>
         r.status === grpc.StatusOK || r.status === grpc.StatusNotFound,
-      '[CS2InfoLang] Response message is not null': (r) => r.message != null,
+      '[CS2InfoLang] Response message is not null when status is OK': (r) =>
+        r.status !== grpc.StatusOK || r.message != null,
     });
   }
 
@@ -110,7 +112,8 @@ export default function () {
     check(infoRes, {
       '[Dota2Info] Status is OK or NOT_FOUND': (r) =>
         r.status === grpc.StatusOK || r.status === grpc.StatusNotFound,
-      '[Dota2Info] Response message is not null': (r) => r.message != null,
+      '[Dota2Info] Response message is not null when status is OK': (r) =>
+        r.status !== grpc.StatusOK || r.message != null,
     });
 
     if (infoRes.status === grpc.StatusOK && infoRes.message) {

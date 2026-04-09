@@ -224,5 +224,5 @@ This ensures tests always use real, currently active match URNs rather than hard
 | `code: 16, invalid token` | Wrong Ghost token | Check `GHOST_TOKEN` env var |
 | `code: 7, access denied` on Bragi calls | Wrong Bragi token or VPN off | Connect VPN, check `BRAGI_TOKEN` env var |
 | All GetMatchInfo return NOT_FOUND | No live matches with visualization | Wait for live matches or test during active match hours |
-| `k6: command not found` | K6 not in PATH | Restart terminal or use `.\run_ghost.bat` |
+| `k6: command not found` | K6 not in PATH | Restart terminal or use `.\run_tests.ps1` |
 | CS2/Dota2 specific checks not running | No live matches for that sport | Expected — checks are conditional on live data |

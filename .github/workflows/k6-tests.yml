@@ -32,14 +32,16 @@ jobs:
 
       - name: Run ghost_match_status
         if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_ghost_match_status }}
-        run: k6 run k6/ghost_match_status.js
+        working-directory: k6
+        run: k6 run ghost_match_status.js
         env:
           BRAGI_TOKEN: ${{ secrets.BRAGI_TOKEN }}
           GHOST_TOKEN: ${{ secrets.GHOST_TOKEN }}
 
       - name: Run ghost_match_info
         if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_ghost_match_info }}
-        run: k6 run k6/ghost_match_info.js
+        working-directory: k6
+        run: k6 run ghost_match_info.js
         env:
           BRAGI_TOKEN: ${{ secrets.BRAGI_TOKEN }}
           GHOST_TOKEN: ${{ secrets.GHOST_TOKEN }}
