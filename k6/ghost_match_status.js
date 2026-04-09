@@ -15,8 +15,19 @@ export const options = {
 
 const BRAGI_ADDR = __ENV.BRAGI_ADDR || 'api-bragi-test.integration.oddin.dev:443';
 const GHOST_ADDR = __ENV.GHOST_ADDR || 'api-ghost-grpc-test-integration.oddin.dev:443';
-const BRAGI_METADATA = { metadata: { token: __ENV.BRAGI_TOKEN || 'a9122914-31ee-4975-80f4-cb458d71d756' } };
-const GHOST_METADATA = { metadata: { token: __ENV.GHOST_TOKEN || '7bbed918-89e7-4f3d-afd8-c7fd43238e53' } };
+
+const BRAGI_TOKEN = __ENV.BRAGI_TOKEN;
+if (!BRAGI_TOKEN) {
+  throw new Error('Missing required environment variable: BRAGI_TOKEN');
+}
+
+const GHOST_TOKEN = __ENV.GHOST_TOKEN;
+if (!GHOST_TOKEN) {
+  throw new Error('Missing required environment variable: GHOST_TOKEN');
+}
+
+const BRAGI_METADATA = { metadata: { token: BRAGI_TOKEN } };
+const GHOST_METADATA = { metadata: { token: GHOST_TOKEN } };
 
 const VALID_STATUSES = [
   'MATCH_STATUS_UNKNOWN',

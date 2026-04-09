@@ -8,13 +8,16 @@ Automated gRPC integration tests for Ghost using [K6](https://k6.io/). Tests use
 
 ### Running locally
 
-Tests work out of the box with hardcoded defaults:
+Auth tokens must be supplied via environment variables:
 
 ```bash
-k6 run k6/ghost_match_status.js
+k6 run \
+  -e BRAGI_TOKEN=your-bragi-token \
+  -e GHOST_TOKEN=your-ghost-token \
+  k6/ghost_match_status.js
 ```
 
-To override tokens or endpoints:
+To also override endpoints:
 
 ```bash
 k6 run \
@@ -50,5 +53,5 @@ Tests run automatically via GitHub Actions:
 |----------|---------|-------------|
 | `BRAGI_ADDR` | `api-bragi-test.integration.oddin.dev:443` | Bragi gRPC endpoint |
 | `GHOST_ADDR` | `api-ghost-grpc-test-integration.oddin.dev:443` | Ghost gRPC endpoint |
-| `BRAGI_TOKEN` | *(hardcoded fallback)* | Bragi auth token |
-| `GHOST_TOKEN` | *(hardcoded fallback)* | Ghost auth token |
+| `BRAGI_TOKEN` | *(required)* | Bragi auth token |
+| `GHOST_TOKEN` | *(required)* | Ghost auth token |

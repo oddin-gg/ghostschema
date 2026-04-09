@@ -28,11 +28,11 @@ ghostschema/
 
 ## Running Tests
 
-Run a single test:
+Run a single test (tokens are required via env vars):
 
 ```bash
 cd k6
-k6 run ghost_match_status.js
+k6 run -e BRAGI_TOKEN=your-bragi-token -e GHOST_TOKEN=your-ghost-token ghost_match_status.js
 ```
 
 Run all Ghost tests with summary:
@@ -62,13 +62,15 @@ cd k6
 | **PROD MAIN** | `api-ghost.oddin.gg` | `api-ghost-grpc.oddin.gg` |
 | **PROD INT** | `api-ghost-integration.oddin.gg` | `api-ghost-grpc-integration.oddin.gg` |
 
-To change the endpoint or tokens, update the constants at the top of each file:
+Tokens must be supplied via environment variables. Endpoints can be overridden the same way:
 
-```javascript
-const GHOST_ADDR = 'api-ghost-grpc-test-integration.oddin.dev:443';
-const BRAGI_ADDR = 'api-bragi-test.integration.oddin.dev:443';
-const GHOST_METADATA = { metadata: { token: 'your-ghost-token' } };
-const BRAGI_METADATA = { metadata: { token: 'your-bragi-token' } };
+```bash
+k6 run \
+  -e BRAGI_TOKEN=your-bragi-token \
+  -e GHOST_TOKEN=your-ghost-token \
+  -e GHOST_ADDR=custom-ghost-host:443 \
+  -e BRAGI_ADDR=custom-bragi-host:443 \
+  ghost_match_status.js
 ```
 
 ## Service Overview
@@ -219,8 +221,8 @@ This ensures tests always use real, currently active match URNs rather than hard
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| `code: 16, invalid token` | Wrong Ghost token | Update `GHOST_METADATA` token |
-| `code: 7, access denied` on Bragi calls | Wrong Bragi token or VPN off | Connect VPN, update `BRAGI_METADATA` token |
+| `code: 16, invalid token` | Wrong Ghost token | Check `GHOST_TOKEN` env var |
+| `code: 7, access denied` on Bragi calls | Wrong Bragi token or VPN off | Connect VPN, check `BRAGI_TOKEN` env var |
 | All GetMatchInfo return NOT_FOUND | No live matches with visualization | Wait for live matches or test during active match hours |
 | `k6: command not found` | K6 not in PATH | Restart terminal or use `.\run_ghost.bat` |
 | CS2/Dota2 specific checks not running | No live matches for that sport | Expected — checks are conditional on live data |

@@ -77,3 +77,7 @@ if ($allFailures.Count -gt 0) {
     }
     Write-Host ""
 }
+
+if ($failCount -gt 0) {
+    exit 1
+}

@@ -4,6 +4,15 @@ on:
   schedule:
     - cron: '0 6 * * *' # Daily at 06:00 UTC
   workflow_dispatch:
+    inputs:
+      run_ghost_match_status:
+        description: 'Run ghost_match_status test'
+        type: boolean
+        default: true
+      run_ghost_match_info:
+        description: 'Run ghost_match_info test'
+        type: boolean
+        default: true
 
 jobs:
   k6-tests:
@@ -22,12 +31,14 @@ jobs:
           sudo apt-get install -y k6
 
       - name: Run ghost_match_status
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_ghost_match_status }}
         run: k6 run k6/ghost_match_status.js
         env:
           BRAGI_TOKEN: ${{ secrets.BRAGI_TOKEN }}
           GHOST_TOKEN: ${{ secrets.GHOST_TOKEN }}
 
       - name: Run ghost_match_info
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_ghost_match_info }}
         run: k6 run k6/ghost_match_info.js
         env:
           BRAGI_TOKEN: ${{ secrets.BRAGI_TOKEN }}
