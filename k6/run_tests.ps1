@@ -1,5 +1,10 @@
-$ErrorActionPreference = "Continue"
+$ErrorActionPreference = "Stop"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+if (-not (Get-Command k6 -ErrorAction SilentlyContinue)) {
+    Write-Host "ERROR: k6 is not installed or not in PATH" -ForegroundColor Red
+    exit 1
+}
 
 $tests = @(
     "ghost_match_status.js",

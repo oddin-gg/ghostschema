@@ -62,6 +62,7 @@ message Match {
   uint32 home_score = 6;
   uint32 away_score = 7;
   MatchStatusType match_status = 8;
+  // Note: field name matches upstream Bragi proto
   google.protobuf.Timestamp plannet_start = 9;
   Tournament tournament  = 10;
   repeated Team teams = 11;

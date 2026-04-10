@@ -1,7 +1,7 @@
 # Ghost gRPC Service — K6 Test Collection
 
 Automated test collection for the **Ghost** gRPC service (`ghost.Ghost`) using [Grafana K6](https://k6.io/).
-Covers all 2 RPCs: both unary calls.
+Covers both RPCs (unary calls).
 
 ## Prerequisites
 
@@ -224,5 +224,5 @@ This ensures tests always use real, currently active match URNs rather than hard
 | `code: 16, invalid token` | Wrong Ghost token | Check `GHOST_TOKEN` env var |
 | `code: 7, access denied` on Bragi calls | Wrong Bragi token or VPN off | Connect VPN, check `BRAGI_TOKEN` env var |
 | All GetMatchInfo return NOT_FOUND | No live matches with visualization | Wait for live matches or test during active match hours |
-| `k6: command not found` | K6 not in PATH | Restart terminal or use `.\run_tests.ps1` |
+| `k6: command not found` | K6 not installed or not in PATH | Install k6 (`winget install k6 --source winget`) and ensure it is in your PATH |
 | CS2/Dota2 specific checks not running | No live matches for that sport | Expected — checks are conditional on live data |

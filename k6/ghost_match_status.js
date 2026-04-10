@@ -48,16 +48,18 @@ export default function () {
   const matches = timelineRes.message?.matches || [];
   bragiClient.close();
 
+  check(matches, {
+    '[Setup] Bragi returned at least one match': (m) => m.length > 0,
+  });
   if (matches.length === 0) {
-    console.log('No matches available from Bragi — skipping Ghost tests');
-    return;
+    throw new Error('No matches available from Bragi; failing instead of skipping Ghost tests');
   }
 
   // --- Step 2: Connect to Ghost ---
   ghostClient.connect(GHOST_ADDR);
 
   // --- Test 1: GetMatchStatus with a live/planned match ---
-  const matchUrn = matches[0].matchUrn;
+  const matchUrn = __ENV.MATCH_URN || matches[0].matchUrn;
 
   const statusRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { match_urn: matchUrn }, GHOST_METADATA);
 
@@ -91,20 +93,16 @@ export default function () {
   const invalidRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { match_urn: 'od:match:999999999' }, GHOST_METADATA);
 
   check(invalidRes, {
-    '[InvalidMatch] Request completes without crash': (r) => r.status !== undefined,
+    '[InvalidMatch] Status is OK': (r) => r.status === grpc.StatusOK,
+    '[InvalidMatch] Returns a valid status enum': (r) =>
+      r.message != null && VALID_STATUSES.includes(r.message.matchStatus),
   });
-
-  if (invalidRes.message) {
-    check(invalidRes.message, {
-      '[InvalidMatch] Returns a valid status enum': (m) => VALID_STATUSES.includes(m.matchStatus),
-    });
-  }
 
   // --- Test 4: GetMatchStatus with empty URN ---
   const emptyRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { match_urn: '' }, GHOST_METADATA);
 
   check(emptyRes, {
-    '[EmptyURN] Request completes without crash': (r) => r.status !== undefined,
+    '[EmptyURN] Returns expected error': (r) => r.status === grpc.StatusInvalidArgument,
   });
 
   ghostClient.close();

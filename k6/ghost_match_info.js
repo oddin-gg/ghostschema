@@ -57,6 +57,14 @@ export default function () {
   const dota2Matches = dota2Res.message?.matches || [];
   bragiClient.close();
 
+  const allMatches = [...cs2Matches, ...dota2Matches];
+  check(allMatches, {
+    '[Setup] Bragi returned at least one live CS2 or Dota2 match': (m) => m.length > 0,
+  });
+  if (allMatches.length === 0) {
+    throw new Error('No live CS2/Dota2 matches available from Bragi; failing instead of skipping Ghost tests');
+  }
+
   // --- Step 2: Connect to Ghost ---
   ghostClient.connect(GHOST_ADDR);
 
@@ -133,7 +141,7 @@ export default function () {
     }
   }
 
-  // --- Test 4: GetMatchInfo with nonexistent match URN (expect NOT_FOUND) ---
+  // --- Test 4: GetMatchInfo with nonexistent match URN (NOT_FOUND expected, OK also accepted) ---
   const invalidRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { match_urn: 'od:match:999999999' }, GHOST_METADATA);
 
   check(invalidRes, {
@@ -145,7 +153,7 @@ export default function () {
   const emptyRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { match_urn: '' }, GHOST_METADATA);
 
   check(emptyRes, {
-    '[EmptyURN] Request completes without crash': (r) => r.status !== undefined,
+    '[EmptyURN] Returns expected error': (r) => r.status === grpc.StatusInvalidArgument,
   });
 
   ghostClient.close();
