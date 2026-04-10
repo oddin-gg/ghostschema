@@ -39,7 +39,7 @@ export default function () {
   // --- Step 1: Get real match URNs from Bragi ---
   bragiClient.connect(BRAGI_ADDR);
 
-  const timelineRes = bragiClient.invoke('bragi.Bragi/MatchTimeline', { live_only: false }, BRAGI_METADATA);
+  const timelineRes = bragiClient.invoke('bragi.Bragi/MatchTimeline', { liveOnly: false }, BRAGI_METADATA);
 
   check(timelineRes, {
     '[Setup] Bragi MatchTimeline status is OK': (r) => r.status === grpc.StatusOK,
@@ -61,7 +61,7 @@ export default function () {
   // --- Test 1: GetMatchStatus with a live/planned match ---
   const matchUrn = __ENV.MATCH_URN || matches[0].matchUrn;
 
-  const statusRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { match_urn: matchUrn }, GHOST_METADATA);
+  const statusRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: matchUrn }, GHOST_METADATA);
 
   check(statusRes, {
     '[MatchStatus] Status is OK': (r) => r.status === grpc.StatusOK,
@@ -79,7 +79,7 @@ export default function () {
   const secondMatchUrn = matches.length > 1 ? matches[1].matchUrn : null;
 
   if (secondMatchUrn) {
-    const statusRes2 = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { match_urn: secondMatchUrn }, GHOST_METADATA);
+    const statusRes2 = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: secondMatchUrn }, GHOST_METADATA);
 
     check(statusRes2, {
       '[MatchStatus2] Status is OK': (r) => r.status === grpc.StatusOK,
@@ -90,7 +90,7 @@ export default function () {
   }
 
   // --- Test 3: GetMatchStatus with nonexistent match URN ---
-  const invalidRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { match_urn: 'od:match:999999999' }, GHOST_METADATA);
+  const invalidRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: 'od:match:999999999' }, GHOST_METADATA);
 
   check(invalidRes, {
     '[InvalidMatch] Status is OK': (r) => r.status === grpc.StatusOK,
@@ -99,7 +99,7 @@ export default function () {
   });
 
   // --- Test 4: GetMatchStatus with empty URN ---
-  const emptyRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { match_urn: '' }, GHOST_METADATA);
+  const emptyRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: '' }, GHOST_METADATA);
 
   check(emptyRes, {
     '[EmptyURN] Returns expected error': (r) => r.status === grpc.StatusInvalidArgument,

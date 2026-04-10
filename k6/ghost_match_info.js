@@ -35,13 +35,13 @@ export default function () {
 
   const cs2Res = bragiClient.invoke(
     'bragi.Bragi/MatchTimeline',
-    { live_only: true, sport: 'SPORT_CS2' },
+    { liveOnly: true, sport: 'SPORT_CS2' },
     BRAGI_METADATA
   );
 
   const dota2Res = bragiClient.invoke(
     'bragi.Bragi/MatchTimeline',
-    { live_only: true, sport: 'SPORT_DOTA2' },
+    { liveOnly: true, sport: 'SPORT_DOTA2' },
     BRAGI_METADATA
   );
 
@@ -72,7 +72,7 @@ export default function () {
   if (cs2Matches.length > 0) {
     const cs2MatchUrn = cs2Matches[0].matchUrn;
 
-    const infoRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { match_urn: cs2MatchUrn }, GHOST_METADATA);
+    const infoRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: cs2MatchUrn }, GHOST_METADATA);
 
     // Ghost returns NOT_FOUND (5) for matches without visualization data — this is valid
     check(infoRes, {
@@ -101,7 +101,7 @@ export default function () {
     }
 
     // --- Test 2: GetMatchInfo for CS2 with lang parameter ---
-    const langRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { match_urn: cs2MatchUrn, lang: 'en' }, GHOST_METADATA);
+    const langRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: cs2MatchUrn, lang: 'en' }, GHOST_METADATA);
 
     check(langRes, {
       '[CS2InfoLang] Status is OK or NOT_FOUND': (r) =>
@@ -115,7 +115,7 @@ export default function () {
   if (dota2Matches.length > 0) {
     const dota2MatchUrn = dota2Matches[0].matchUrn;
 
-    const infoRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { match_urn: dota2MatchUrn }, GHOST_METADATA);
+    const infoRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: dota2MatchUrn }, GHOST_METADATA);
 
     check(infoRes, {
       '[Dota2Info] Status is OK or NOT_FOUND': (r) =>
@@ -142,7 +142,7 @@ export default function () {
   }
 
   // --- Test 4: GetMatchInfo with nonexistent match URN (NOT_FOUND expected, OK also accepted) ---
-  const invalidRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { match_urn: 'od:match:999999999' }, GHOST_METADATA);
+  const invalidRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: 'od:match:999999999' }, GHOST_METADATA);
 
   check(invalidRes, {
     '[InvalidMatch] Returns NOT_FOUND or OK': (r) =>
@@ -150,7 +150,7 @@ export default function () {
   });
 
   // --- Test 5: GetMatchInfo with empty URN ---
-  const emptyRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { match_urn: '' }, GHOST_METADATA);
+  const emptyRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: '' }, GHOST_METADATA);
 
   check(emptyRes, {
     '[EmptyURN] Returns expected error': (r) => r.status === grpc.StatusInvalidArgument,
