@@ -72,48 +72,48 @@ export default function () {
 
   try {
     // --- Test 1: GetMatchInfo for a live CS2 match ---
-  if (cs2Matches.length > 0) {
-    const cs2MatchUrn = __ENV.CS2_MATCH_URN || cs2Matches[0].matchUrn;
+    if (cs2Matches.length > 0) {
+      const cs2MatchUrn = __ENV.CS2_MATCH_URN || cs2Matches[0].matchUrn;
 
-    const infoRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: cs2MatchUrn }, GHOST_METADATA);
+      const infoRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: cs2MatchUrn }, GHOST_METADATA);
 
-    // Ghost returns NOT_FOUND (5) for matches without visualization data — this is valid
-    check(infoRes, {
-      '[CS2Info] Status is OK or NOT_FOUND': (r) =>
-        r.status === grpc.StatusOK || r.status === grpc.StatusNotFound,
-      '[CS2Info] Response message is not null when status is OK': (r) =>
-        r.status !== grpc.StatusOK || r.message != null,
-    });
-
-    if (infoRes.status === grpc.StatusOK && infoRes.message) {
-      check(infoRes.message, {
-        '[CS2Info] Has host field': (m) => typeof m.host === 'string',
-        '[CS2Info] Has cs2 oneof set': (m) => m.cs2 != null,
+      // Ghost returns NOT_FOUND (5) for matches without visualization data — this is valid
+      check(infoRes, {
+        '[CS2Info] Status is OK or NOT_FOUND': (r) =>
+          r.status === grpc.StatusOK || r.status === grpc.StatusNotFound,
+        '[CS2Info] Response message is not null when status is OK': (r) =>
+          r.status !== grpc.StatusOK || r.message != null,
       });
 
-      if (infoRes.message.cs2) {
-        check(infoRes.message.cs2, {
-          '[CS2Info] Has mapName': (c) => typeof c.mapName === 'string',
-          '[CS2Info] Has mapAssetName': (c) => typeof c.mapAssetName === 'string',
-          '[CS2Info] Has gameVersion': (c) => typeof c.gameVersion === 'string',
-          '[CS2Info] Has assetUrl': (c) => typeof c.assetUrl === 'string',
-          '[CS2Info] assetUrl is a valid URL or empty': (c) =>
-            typeof c.assetUrl === 'string' &&
-            (c.assetUrl === '' || c.assetUrl.startsWith('http://') || c.assetUrl.startsWith('https://')),
+      if (infoRes.status === grpc.StatusOK && infoRes.message) {
+        check(infoRes.message, {
+          '[CS2Info] Has host field': (m) => typeof m.host === 'string',
+          '[CS2Info] Has cs2 oneof set': (m) => m.cs2 != null,
         });
+
+        if (infoRes.message.cs2) {
+          check(infoRes.message.cs2, {
+            '[CS2Info] Has mapName': (c) => typeof c.mapName === 'string',
+            '[CS2Info] Has mapAssetName': (c) => typeof c.mapAssetName === 'string',
+            '[CS2Info] Has gameVersion': (c) => typeof c.gameVersion === 'string',
+            '[CS2Info] Has assetUrl': (c) => typeof c.assetUrl === 'string',
+            '[CS2Info] assetUrl is a valid URL or empty': (c) =>
+              typeof c.assetUrl === 'string' &&
+              (c.assetUrl === '' || c.assetUrl.startsWith('http://') || c.assetUrl.startsWith('https://')),
+          });
+        }
       }
+
+      // --- Test 2: GetMatchInfo for CS2 with lang parameter ---
+      const langRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: cs2MatchUrn, lang: 'en' }, GHOST_METADATA);
+
+      check(langRes, {
+        '[CS2InfoLang] Status is OK or NOT_FOUND': (r) =>
+          r.status === grpc.StatusOK || r.status === grpc.StatusNotFound,
+        '[CS2InfoLang] Response message is not null when status is OK': (r) =>
+          r.status !== grpc.StatusOK || r.message != null,
+      });
     }
-
-    // --- Test 2: GetMatchInfo for CS2 with lang parameter ---
-    const langRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: cs2MatchUrn, lang: 'en' }, GHOST_METADATA);
-
-    check(langRes, {
-      '[CS2InfoLang] Status is OK or NOT_FOUND': (r) =>
-        r.status === grpc.StatusOK || r.status === grpc.StatusNotFound,
-      '[CS2InfoLang] Response message is not null when status is OK': (r) =>
-        r.status !== grpc.StatusOK || r.message != null,
-    });
-  }
 
   // --- Test 3: GetMatchInfo for a live Dota2 match ---
   if (dota2Matches.length > 0) {
