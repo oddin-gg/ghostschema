@@ -35,8 +35,8 @@ const VALID_STATUSES = [
   'MATCH_STATUS_UNAVAILABLE',
 ];
 
-export default function () {
-  // --- Step 1: Get real match URNs from Bragi ---
+export function setup() {
+  // Resolve match URNs from Bragi once before test iterations
   bragiClient.connect(BRAGI_ADDR);
 
   let matches = [];
@@ -53,19 +53,22 @@ export default function () {
   }
 
   if (matches.length === 0) {
-    console.warn('No matches available from Bragi — skipping live-match tests, running error-case tests only');
+    console.warn('No matches available from Bragi — live-match tests will be skipped');
   }
 
-  // --- Step 2: Connect to Ghost ---
+  return {
+    matchUrn: __ENV.MATCH_URN || (matches.length > 0 ? matches[0].matchUrn : null),
+    secondMatchUrn: matches.length > 1 ? matches[1].matchUrn : null,
+  };
+}
+
+export default function (data) {
   ghostClient.connect(GHOST_ADDR);
 
   try {
     // --- Tests 1 & 2: Live-match-dependent (skipped when no matches available) ---
-    if (matches.length > 0) {
-      // --- Test 1: GetMatchStatus with a live/planned match ---
-      const matchUrn = __ENV.MATCH_URN || matches[0].matchUrn;
-
-      const statusRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: matchUrn }, GHOST_METADATA);
+    if (data.matchUrn) {
+      const statusRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: data.matchUrn }, GHOST_METADATA);
 
       check(statusRes, {
         '[MatchStatus] Status is OK': (r) => r.status === grpc.StatusOK,
@@ -79,11 +82,8 @@ export default function () {
         });
       }
 
-      // --- Test 2: GetMatchStatus with multiple matches (validate consistency) ---
-      const secondMatchUrn = matches.length > 1 ? matches[1].matchUrn : null;
-
-      if (secondMatchUrn) {
-        const statusRes2 = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: secondMatchUrn }, GHOST_METADATA);
+      if (data.secondMatchUrn) {
+        const statusRes2 = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: data.secondMatchUrn }, GHOST_METADATA);
 
         check(statusRes2, {
           '[MatchStatus2] Status is OK': (r) => r.status === grpc.StatusOK,

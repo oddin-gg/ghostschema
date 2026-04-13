@@ -29,8 +29,8 @@ if (!GHOST_TOKEN) {
 const BRAGI_METADATA = { metadata: { token: BRAGI_TOKEN } };
 const GHOST_METADATA = { metadata: { token: GHOST_TOKEN } };
 
-export default function () {
-  // --- Step 1: Get live match URNs from Bragi (Ghost only has data for live/visualized matches) ---
+export function setup() {
+  // Resolve live match URNs from Bragi once before test iterations
   bragiClient.connect(BRAGI_ADDR);
 
   let cs2Matches = [];
@@ -67,13 +67,19 @@ export default function () {
     console.warn('No live CS2/Dota2 matches available from Bragi — skipping sport-specific tests, running error-case tests only');
   }
 
-  // --- Step 2: Connect to Ghost ---
+  return {
+    cs2MatchUrn: __ENV.CS2_MATCH_URN || (cs2Matches.length > 0 ? cs2Matches[0].matchUrn : null),
+    dota2MatchUrn: __ENV.DOTA2_MATCH_URN || (dota2Matches.length > 0 ? dota2Matches[0].matchUrn : null),
+  };
+}
+
+export default function (data) {
   ghostClient.connect(GHOST_ADDR);
 
   try {
     // --- Test 1: GetMatchInfo for a live CS2 match ---
-    if (cs2Matches.length > 0) {
-      const cs2MatchUrn = __ENV.CS2_MATCH_URN || cs2Matches[0].matchUrn;
+    if (data.cs2MatchUrn) {
+      const cs2MatchUrn = data.cs2MatchUrn;
 
       const infoRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: cs2MatchUrn }, GHOST_METADATA);
 
@@ -116,8 +122,8 @@ export default function () {
     }
 
     // --- Test 3: GetMatchInfo for a live Dota2 match ---
-    if (dota2Matches.length > 0) {
-      const dota2MatchUrn = __ENV.DOTA2_MATCH_URN || dota2Matches[0].matchUrn;
+    if (data.dota2MatchUrn) {
+      const dota2MatchUrn = data.dota2MatchUrn;
 
       const infoRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: dota2MatchUrn }, GHOST_METADATA);
 
