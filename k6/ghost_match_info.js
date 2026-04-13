@@ -115,51 +115,51 @@ export default function () {
       });
     }
 
-  // --- Test 3: GetMatchInfo for a live Dota2 match ---
-  if (dota2Matches.length > 0) {
-    const dota2MatchUrn = __ENV.DOTA2_MATCH_URN || dota2Matches[0].matchUrn;
+    // --- Test 3: GetMatchInfo for a live Dota2 match ---
+    if (dota2Matches.length > 0) {
+      const dota2MatchUrn = __ENV.DOTA2_MATCH_URN || dota2Matches[0].matchUrn;
 
-    const infoRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: dota2MatchUrn }, GHOST_METADATA);
+      const infoRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: dota2MatchUrn }, GHOST_METADATA);
 
-    check(infoRes, {
-      '[Dota2Info] Status is OK or NOT_FOUND': (r) =>
-        r.status === grpc.StatusOK || r.status === grpc.StatusNotFound,
-      '[Dota2Info] Response message is not null when status is OK': (r) =>
-        r.status !== grpc.StatusOK || r.message != null,
-    });
-
-    if (infoRes.status === grpc.StatusOK && infoRes.message) {
-      check(infoRes.message, {
-        '[Dota2Info] Has host field': (m) => typeof m.host === 'string',
-        '[Dota2Info] Has dota2 oneof set': (m) => m.dota2 != null,
+      check(infoRes, {
+        '[Dota2Info] Status is OK or NOT_FOUND': (r) =>
+          r.status === grpc.StatusOK || r.status === grpc.StatusNotFound,
+        '[Dota2Info] Response message is not null when status is OK': (r) =>
+          r.status !== grpc.StatusOK || r.message != null,
       });
 
-      if (infoRes.message.dota2) {
-        check(infoRes.message.dota2, {
-          '[Dota2Info] Has gameVersion': (d) => typeof d.gameVersion === 'string',
-          '[Dota2Info] Has assetUrl': (d) => typeof d.assetUrl === 'string',
-          '[Dota2Info] assetUrl is a valid URL or empty': (d) =>
-            typeof d.assetUrl === 'string' &&
-            (d.assetUrl === '' || d.assetUrl.startsWith('http://') || d.assetUrl.startsWith('https://')),
+      if (infoRes.status === grpc.StatusOK && infoRes.message) {
+        check(infoRes.message, {
+          '[Dota2Info] Has host field': (m) => typeof m.host === 'string',
+          '[Dota2Info] Has dota2 oneof set': (m) => m.dota2 != null,
         });
+
+        if (infoRes.message.dota2) {
+          check(infoRes.message.dota2, {
+            '[Dota2Info] Has gameVersion': (d) => typeof d.gameVersion === 'string',
+            '[Dota2Info] Has assetUrl': (d) => typeof d.assetUrl === 'string',
+            '[Dota2Info] assetUrl is a valid URL or empty': (d) =>
+              typeof d.assetUrl === 'string' &&
+              (d.assetUrl === '' || d.assetUrl.startsWith('http://') || d.assetUrl.startsWith('https://')),
+          });
+        }
       }
     }
-  }
 
-  // --- Test 4: GetMatchInfo with nonexistent match URN (NOT_FOUND expected, OK also accepted) ---
-  const invalidRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: 'od:match:999999999' }, GHOST_METADATA);
+    // --- Test 4: GetMatchInfo with nonexistent match URN (NOT_FOUND expected, OK also accepted) ---
+    const invalidRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: 'od:match:999999999' }, GHOST_METADATA);
 
-  check(invalidRes, {
-    '[InvalidMatch] Returns NOT_FOUND or OK': (r) =>
-      r.status === grpc.StatusNotFound || r.status === grpc.StatusOK,
-  });
+    check(invalidRes, {
+      '[InvalidMatch] Returns NOT_FOUND or OK': (r) =>
+        r.status === grpc.StatusNotFound || r.status === grpc.StatusOK,
+    });
 
-  // --- Test 5: GetMatchInfo with empty URN ---
-  const emptyRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: '' }, GHOST_METADATA);
+    // --- Test 5: GetMatchInfo with empty URN ---
+    const emptyRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: '' }, GHOST_METADATA);
 
-  check(emptyRes, {
-    '[EmptyURN] Returns expected error': (r) => r.status === grpc.StatusInvalidArgument,
-  });
+    check(emptyRes, {
+      '[EmptyURN] Returns expected error': (r) => r.status === grpc.StatusInvalidArgument,
+    });
   } finally {
     ghostClient.close();
   }
