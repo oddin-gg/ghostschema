@@ -57,3 +57,4 @@ Tests run automatically via GitHub Actions:
 | `GHOST_ADDR` | `api-ghost-grpc-test-integration.oddin.dev:443` | Ghost gRPC endpoint |
 | `BRAGI_TOKEN` | *(required)* | Bragi auth token |
 | `GHOST_TOKEN` | *(required)* | Ghost auth token |
+| `MATCH_URN` | *(optional)* | Overrides the dynamically resolved match URN from Bragi; useful for deterministic CI runs |

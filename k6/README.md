@@ -51,6 +51,7 @@ cd k6
 | **TLS** | Enabled (default for port 443) |
 | **Ghost Auth** | Token passed via `metadata.token` |
 | **Bragi Auth** | Separate token passed via `metadata.token` |
+| **MATCH_URN** | *(optional)* Overrides the dynamically resolved match URN from Bragi; useful for deterministic CI runs |
 | **Threshold** | `checks rate==1.0` (all checks must pass) |
 
 ### Ghost Server Environments
