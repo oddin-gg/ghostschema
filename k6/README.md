@@ -123,16 +123,17 @@ The Ghost service provides match visualization data for esports matches. It supp
 | # | Check | Description |
 |---|-------|-------------|
 | 1 | `[Setup] Bragi MatchTimeline status is OK` | Fetches match URNs from Bragi |
-| 2 | `[MatchStatus] Status is OK` | gRPC status code is 0 for first match |
-| 3 | `[MatchStatus] Response message is not null` | Server returned a response body |
-| 4 | `[MatchStatus] Has matchStatus field` | matchStatus field is a string |
-| 5 | `[MatchStatus] matchStatus is a valid enum` | One of: UNKNOWN, AVAILABLE, UNAVAILABLE |
-| 6 | `[MatchStatus2] Status is OK` | gRPC status code is 0 for second match |
-| 7 | `[MatchStatus2] Response message is not null` | Response body present |
-| 8 | `[MatchStatus2] matchStatus is a valid enum` | Valid enum for second match |
-| 9 | `[InvalidMatch] Request completes without crash` | Nonexistent URN handled gracefully |
-| 10 | `[InvalidMatch] Returns a valid status enum` | Returns valid enum even for unknown match |
-| 11 | `[EmptyURN] Request completes without crash` | Empty URN handled gracefully |
+| 2 | `[Setup] Bragi returned at least one match` | Ensures Bragi returned match data |
+| 3 | `[MatchStatus] Status is OK` | gRPC status code is 0 for first match |
+| 4 | `[MatchStatus] Response message is not null` | Server returned a response body |
+| 5 | `[MatchStatus] Has matchStatus field` | matchStatus field is a string |
+| 6 | `[MatchStatus] matchStatus is a valid enum` | One of: UNKNOWN, AVAILABLE, UNAVAILABLE |
+| 7 | `[MatchStatus2] Status is OK` | gRPC status code is 0 for second match |
+| 8 | `[MatchStatus2] Response message is not null` | Response body present |
+| 9 | `[MatchStatus2] matchStatus is a valid enum` | Valid enum for second match |
+| 10 | `[InvalidMatch] Status is OK` | Nonexistent URN returns OK status |
+| 11 | `[InvalidMatch] Returns a valid status enum` | Returns valid enum even for unknown match |
+| 12 | `[EmptyURN] Returns expected error` | Empty URN returns InvalidArgument error |
 
 **Scenarios tested:**
 - Valid match URN (1st match from Bragi timeline)
@@ -148,32 +149,33 @@ The Ghost service provides match visualization data for esports matches. It supp
 **RPC:** `GetMatchInfo` (unary)
 **Proto:** `MatchInfoRequest` → `MatchInfoResponse`
 
-**Dependency:** Uses Bragi `MatchTimeline` with `live_only: true` to resolve live match URNs. Ghost only returns match info for matches that are actively being visualized, so non-live matches return `NOT_FOUND` — this is expected and valid.
+**Dependency:** Uses Bragi `MatchTimeline` with `liveOnly: true` to resolve live match URNs. Ghost only returns match info for matches that are actively being visualized, so non-live matches return `NOT_FOUND` — this is expected and valid.
 
 | # | Check | Description |
 |---|-------|-------------|
 | 1 | `[Setup] Bragi CS2 timeline status is OK` | Fetches live CS2 match URNs |
 | 2 | `[Setup] Bragi Dota2 timeline status is OK` | Fetches live Dota2 match URNs |
-| 3 | `[CS2Info] Status is OK or NOT_FOUND` | OK if visualized, NOT_FOUND if not |
-| 4 | `[CS2Info] Response message is not null` | Response body present |
-| 5 | `[CS2Info] Has host field` | Host string present (when OK) |
-| 6 | `[CS2Info] Has mapName` | CS2 map name (when OK + CS2 data) |
-| 7 | `[CS2Info] Has mapAssetName` | CS2 map asset name (when OK + CS2 data) |
-| 8 | `[CS2Info] Has gameVersion` | CS2 game version (when OK + CS2 data) |
-| 9 | `[CS2Info] Has assetUrl` | Asset URL present (when OK + CS2 data) |
-| 10 | `[CS2Info] assetUrl is a valid URL or empty` | URL format validation |
-| 11 | `[CS2InfoLang] Status is OK or NOT_FOUND` | Same request with `lang: "en"` |
-| 12 | `[CS2InfoLang] Response message is not null` | Lang variant returns body |
-| 13 | `[Dota2Info] Status is OK or NOT_FOUND` | OK if visualized, NOT_FOUND if not |
-| 14 | `[Dota2Info] Response message is not null` | Response body present |
-| 15 | `[Dota2Info] Has host field` | Host string present (when OK) |
-| 16 | `[Dota2Info] Has gameVersion` | Dota2 game version (when OK + Dota2 data) |
-| 17 | `[Dota2Info] Has assetUrl` | Asset URL present (when OK + Dota2 data) |
-| 18 | `[Dota2Info] assetUrl is a valid URL or empty` | URL format validation |
-| 19 | `[InvalidMatch] Returns NOT_FOUND or OK` | Nonexistent URN returns NOT_FOUND |
-| 20 | `[EmptyURN] Request completes without crash` | Empty URN handled gracefully |
+| 3 | `[Setup] Bragi returned at least one live CS2 or Dota2 match` | Ensures Bragi returned match data |
+| 4 | `[CS2Info] Status is OK or NOT_FOUND` | OK if visualized, NOT_FOUND if not |
+| 5 | `[CS2Info] Response message is not null when status is OK` | Response body present when OK |
+| 6 | `[CS2Info] Has host field` | Host string present (when OK) |
+| 7 | `[CS2Info] Has mapName` | CS2 map name (when OK + CS2 data) |
+| 8 | `[CS2Info] Has mapAssetName` | CS2 map asset name (when OK + CS2 data) |
+| 9 | `[CS2Info] Has gameVersion` | CS2 game version (when OK + CS2 data) |
+| 10 | `[CS2Info] Has assetUrl` | Asset URL present (when OK + CS2 data) |
+| 11 | `[CS2Info] assetUrl is a valid URL or empty` | URL format validation |
+| 12 | `[CS2InfoLang] Status is OK or NOT_FOUND` | Same request with `lang: "en"` |
+| 13 | `[CS2InfoLang] Response message is not null when status is OK` | Lang variant returns body when OK |
+| 14 | `[Dota2Info] Status is OK or NOT_FOUND` | OK if visualized, NOT_FOUND if not |
+| 15 | `[Dota2Info] Response message is not null when status is OK` | Response body present when OK |
+| 16 | `[Dota2Info] Has host field` | Host string present (when OK) |
+| 17 | `[Dota2Info] Has gameVersion` | Dota2 game version (when OK + Dota2 data) |
+| 18 | `[Dota2Info] Has assetUrl` | Asset URL present (when OK + Dota2 data) |
+| 19 | `[Dota2Info] assetUrl is a valid URL or empty` | URL format validation |
+| 20 | `[InvalidMatch] Returns NOT_FOUND or OK` | Nonexistent URN returns NOT_FOUND |
+| 21 | `[EmptyURN] Returns expected error` | Empty URN returns InvalidArgument error |
 
-**Note:** Checks 5–10 and 15–18 only execute when the server returns `StatusOK` with CS2/Dota2 data. The number of checks varies depending on whether live matches with visualization data are available.
+**Note:** Checks 6–11 and 16–19 only execute when the server returns `StatusOK` with CS2/Dota2 data. The number of checks varies depending on whether live matches with visualization data are available.
 
 **Scenarios tested:**
 - Live CS2 match (dynamically resolved from Bragi)
@@ -191,9 +193,9 @@ The Ghost service provides match visualization data for esports matches. It supp
 
 | RPC | Type | Test File | Checks |
 |-----|------|-----------|--------|
-| `GetMatchStatus` | unary | `ghost_match_status.js` | 11 |
-| `GetMatchInfo` | unary | `ghost_match_info.js` | up to 20 |
-| **Total** | | **2 files** | **up to 31** |
+| `GetMatchStatus` | unary | `ghost_match_status.js` | 12 |
+| `GetMatchInfo` | unary | `ghost_match_info.js` | up to 21 |
+| **Total** | | **2 files** | **up to 33** |
 
 ## Architecture Notes
 
@@ -202,7 +204,7 @@ The Ghost service provides match visualization data for esports matches. It supp
 Ghost tests depend on Bragi to resolve match URNs dynamically:
 
 ```
-Bragi MatchTimeline (live_only: true)
+Bragi MatchTimeline (liveOnly: true)
     │
     ├── CS2 match URN ──→ Ghost GetMatchInfo (CS2)
     ├── Dota2 match URN ─→ Ghost GetMatchInfo (Dota2)

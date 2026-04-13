@@ -70,7 +70,7 @@ export default function () {
 
   // --- Test 1: GetMatchInfo for a live CS2 match ---
   if (cs2Matches.length > 0) {
-    const cs2MatchUrn = cs2Matches[0].matchUrn;
+    const cs2MatchUrn = __ENV.MATCH_URN || cs2Matches[0].matchUrn;
 
     const infoRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: cs2MatchUrn }, GHOST_METADATA);
 
