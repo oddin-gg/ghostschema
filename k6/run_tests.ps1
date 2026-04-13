@@ -7,7 +7,7 @@ if (-not (Get-Command k6 -ErrorAction SilentlyContinue)) {
 }
 
 if (-not (Test-Path "$PSScriptRoot\bragi_proto")) {
-    Write-Host "ERROR: bragi_proto/ not found. Run 'bash setup_protos.sh' first to fetch bragi proto definitions." -ForegroundColor Red
+    Write-Host "ERROR: bragi_proto/ not found. Run 'bash setup_protos.sh' in Git Bash (or WSL) to fetch bragi proto definitions." -ForegroundColor Red
     exit 1
 }
 

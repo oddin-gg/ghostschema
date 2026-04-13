@@ -45,7 +45,7 @@ k6 run \
 
 ### CI/CD
 
-Tests run automatically via GitHub Actions:
+Tests run automatically via GitHub Actions on a self-hosted Linux runner (requires VPN/network access to internal endpoints):
 - **Schedule**: Daily at 06:00 UTC
 - **Manual**: Trigger via `workflow_dispatch` in the Actions tab
 

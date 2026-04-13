@@ -6,6 +6,7 @@ Covers both RPCs (unary calls).
 ## Prerequisites
 
 - **K6** installed (`winget install k6 --source winget`)
+- **Git** and **Bash** (Git Bash on Windows, or WSL)
 - **VPN** connected (required to reach Ghost test endpoints)
 - Valid **auth tokens** for both Ghost and Bragi (Bragi is used to resolve live match URNs)
 - **Bragi protos** fetched (see Setup below)
@@ -139,15 +140,15 @@ The Ghost service provides match visualization data for esports matches. It supp
 |---|-------|-------------|
 | 1 | `[Setup] Bragi MatchTimeline status is OK` | Fetches match URNs from Bragi |
 | 2 | `[MatchStatus] Status is OK` | gRPC status code is 0 for first match |
-| 4 | `[MatchStatus] Response message is not null` | Server returned a response body |
-| 5 | `[MatchStatus] Has matchStatus field` | matchStatus field is a string |
-| 6 | `[MatchStatus] matchStatus is a valid enum` | One of: UNKNOWN, AVAILABLE, UNAVAILABLE |
-| 7 | `[MatchStatus2] Status is OK` | gRPC status code is 0 for second match |
-| 8 | `[MatchStatus2] Response message is not null` | Response body present |
-| 9 | `[MatchStatus2] matchStatus is a valid enum` | Valid enum for second match |
-| 10 | `[InvalidMatch] Status is OK` | Nonexistent URN returns OK status |
-| 11 | `[InvalidMatch] Returns a valid status enum` | Returns valid enum even for unknown match |
-| 12 | `[EmptyURN] Returns expected error` | Empty URN returns InvalidArgument error |
+| 3 | `[MatchStatus] Response message is not null` | Server returned a response body |
+| 4 | `[MatchStatus] Has matchStatus field` | matchStatus field is a string |
+| 5 | `[MatchStatus] matchStatus is a valid enum` | One of: UNKNOWN, AVAILABLE, UNAVAILABLE |
+| 6 | `[MatchStatus2] Status is OK` | gRPC status code is 0 for second match |
+| 7 | `[MatchStatus2] Response message is not null` | Response body present |
+| 8 | `[MatchStatus2] matchStatus is a valid enum` | Valid enum for second match |
+| 9 | `[InvalidMatch] Status is OK` | Nonexistent URN returns OK status |
+| 10 | `[InvalidMatch] Returns a valid status enum` | Returns valid enum even for unknown match |
+| 11 | `[EmptyURN] Returns expected error` | Empty URN returns InvalidArgument error |
 
 **Scenarios tested:**
 - Valid match URN (1st match from Bragi timeline)
