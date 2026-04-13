@@ -8,7 +8,14 @@ Automated gRPC integration tests for Ghost using [K6](https://k6.io/). Tests use
 
 ### Running locally
 
-Auth tokens must be supplied via environment variables:
+First, fetch bragi proto definitions:
+
+```bash
+cd k6
+bash setup_protos.sh
+```
+
+Then run tests (auth tokens must be supplied via environment variables):
 
 ```bash
 cd k6

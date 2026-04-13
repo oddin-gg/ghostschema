@@ -6,6 +6,11 @@ if (-not (Get-Command k6 -ErrorAction SilentlyContinue)) {
     exit 1
 }
 
+if (-not (Test-Path "$PSScriptRoot\bragi_proto")) {
+    Write-Host "ERROR: bragi_proto/ not found. Run 'bash setup_protos.sh' first to fetch bragi proto definitions." -ForegroundColor Red
+    exit 1
+}
+
 $tests = @(
     "ghost_match_status.js",
     "ghost_match_info.js"

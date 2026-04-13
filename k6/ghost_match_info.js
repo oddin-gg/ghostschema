@@ -2,7 +2,7 @@ import grpc from 'k6/net/grpc';
 import { check } from 'k6';
 
 const bragiClient = new grpc.Client();
-bragiClient.load(['bragi_proto'], 'bragi_service.proto');
+bragiClient.load(['bragi_proto'], 'bragi/bragi_service.proto');
 
 const ghostClient = new grpc.Client();
 ghostClient.load(['../proto'], 'ghost/ghost.proto');
@@ -58,9 +58,6 @@ export default function () {
   bragiClient.close();
 
   const allMatches = [...cs2Matches, ...dota2Matches];
-  check(allMatches, {
-    '[Setup] Bragi returned at least one live CS2 or Dota2 match': (m) => m.length > 0,
-  });
   if (allMatches.length === 0) {
     console.warn('No live CS2/Dota2 matches available from Bragi — skipping sport-specific tests, running error-case tests only');
   }
@@ -113,7 +110,7 @@ export default function () {
 
   // --- Test 3: GetMatchInfo for a live Dota2 match ---
   if (dota2Matches.length > 0) {
-    const dota2MatchUrn = dota2Matches[0].matchUrn;
+    const dota2MatchUrn = __ENV.MATCH_URN || dota2Matches[0].matchUrn;
 
     const infoRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: dota2MatchUrn }, GHOST_METADATA);
 

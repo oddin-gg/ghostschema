@@ -8,6 +8,7 @@ Covers both RPCs (unary calls).
 - **K6** installed (`winget install k6 --source winget`)
 - **VPN** connected (required to reach Ghost test endpoints)
 - Valid **auth tokens** for both Ghost and Bragi (Bragi is used to resolve live match URNs)
+- **Bragi protos** fetched (see Setup below)
 
 ## Project Structure
 
@@ -18,12 +19,22 @@ ghostschema/
 │       └── ghost.proto                   # Ghost service definition (2 RPCs)
 │
 └── k6/                                   # K6 test collection
-    ├── bragi_proto/                      # Bundled Bragi protos (cross-service dependency)
+    ├── bragi_proto/                      # Bragi protos (fetched via setup_protos.sh, gitignored)
     │   └── bragi_service.proto
     ├── ghost_match_status.js             # GetMatchStatus (unary)
     ├── ghost_match_info.js               # GetMatchInfo (unary)
+    ├── setup_protos.sh                   # Fetches bragi protos from bragischema repo
     ├── run_tests.ps1                     # PowerShell runner with summary
     └── README.md                         # This file
+```
+
+## Setup
+
+Fetch bragi proto definitions before running tests (one-time, re-run to update):
+
+```bash
+cd k6
+bash setup_protos.sh
 ```
 
 ## Running Tests

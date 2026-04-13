@@ -33,3 +33,6 @@ java/ots_schema.jar
 /examples/goconnector/goconnector
 
 .DS_Store
+
+# Fetched bragi proto definitions (run k6/setup_protos.sh to populate)
+k6/bragi_proto/
