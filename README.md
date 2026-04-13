@@ -4,7 +4,7 @@ Represents gRPC schema for Oddin.gg Ghost visualization service.
 
 ## K6 gRPC Tests
 
-Automated gRPC integration tests for Ghost using [K6](https://k6.io/). Tests use Bragi to fetch live match URNs, then validate Ghost endpoints.
+Automated gRPC integration tests for Ghost using [K6](https://k6.io/). Tests use Bragi to fetch match URNs, then validate Ghost endpoints.
 
 ### Running locally
 

@@ -14,6 +14,10 @@ on:
         type: boolean
         default: true
 
+concurrency:
+  group: k6-tests
+  cancel-in-progress: true
+
 jobs:
   k6-tests:
     runs-on: [self-hosted, linux]
