@@ -64,4 +64,6 @@ Tests run automatically via GitHub Actions:
 | `GHOST_ADDR` | `api-ghost-grpc-test-integration.oddin.dev:443` | Ghost gRPC endpoint |
 | `BRAGI_TOKEN` | *(required)* | Bragi auth token |
 | `GHOST_TOKEN` | *(required)* | Ghost auth token |
-| `MATCH_URN` | *(optional)* | Overrides the dynamically resolved match URN from Bragi; useful for deterministic CI runs |
+| `MATCH_URN` | *(optional)* | Overrides match URN in `ghost_match_status.js` |
+| `CS2_MATCH_URN` | *(optional)* | Overrides CS2 match URN in `ghost_match_info.js` |
+| `DOTA2_MATCH_URN` | *(optional)* | Overrides Dota2 match URN in `ghost_match_info.js` |

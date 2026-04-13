@@ -20,7 +20,8 @@ ghostschema/
 │
 └── k6/                                   # K6 test collection
     ├── bragi_proto/                      # Bragi protos (fetched via setup_protos.sh, gitignored)
-    │   └── bragi_service.proto
+    │   └── bragi/
+    │       └── bragi_service.proto
     ├── ghost_match_status.js             # GetMatchStatus (unary)
     ├── ghost_match_info.js               # GetMatchInfo (unary)
     ├── setup_protos.sh                   # Fetches bragi protos from bragischema repo
@@ -62,7 +63,9 @@ cd k6
 | **TLS** | Enabled (default for port 443) |
 | **Ghost Auth** | Token passed via `metadata.token` |
 | **Bragi Auth** | Separate token passed via `metadata.token` |
-| **MATCH_URN** | *(optional)* Overrides the dynamically resolved match URN from Bragi; useful for deterministic CI runs |
+| **MATCH_URN** | *(optional)* Overrides the dynamically resolved match URN in `ghost_match_status.js` |
+| **CS2_MATCH_URN** | *(optional)* Overrides the CS2 match URN in `ghost_match_info.js` |
+| **DOTA2_MATCH_URN** | *(optional)* Overrides the Dota2 match URN in `ghost_match_info.js` |
 | **Threshold** | `checks rate==1.0` (all checks must pass) |
 
 ### Ghost Server Environments

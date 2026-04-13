@@ -67,7 +67,7 @@ export default function () {
 
   // --- Test 1: GetMatchInfo for a live CS2 match ---
   if (cs2Matches.length > 0) {
-    const cs2MatchUrn = __ENV.MATCH_URN || cs2Matches[0].matchUrn;
+    const cs2MatchUrn = __ENV.CS2_MATCH_URN || cs2Matches[0].matchUrn;
 
     const infoRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: cs2MatchUrn }, GHOST_METADATA);
 
@@ -82,6 +82,7 @@ export default function () {
     if (infoRes.status === grpc.StatusOK && infoRes.message) {
       check(infoRes.message, {
         '[CS2Info] Has host field': (m) => typeof m.host === 'string',
+        '[CS2Info] Has cs2 oneof set': (m) => m.cs2 != null,
       });
 
       if (infoRes.message.cs2) {
@@ -110,7 +111,7 @@ export default function () {
 
   // --- Test 3: GetMatchInfo for a live Dota2 match ---
   if (dota2Matches.length > 0) {
-    const dota2MatchUrn = __ENV.MATCH_URN || dota2Matches[0].matchUrn;
+    const dota2MatchUrn = __ENV.DOTA2_MATCH_URN || dota2Matches[0].matchUrn;
 
     const infoRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: dota2MatchUrn }, GHOST_METADATA);
 
@@ -124,6 +125,7 @@ export default function () {
     if (infoRes.status === grpc.StatusOK && infoRes.message) {
       check(infoRes.message, {
         '[Dota2Info] Has host field': (m) => typeof m.host === 'string',
+        '[Dota2Info] Has dota2 oneof set': (m) => m.dota2 != null,
       });
 
       if (infoRes.message.dota2) {
