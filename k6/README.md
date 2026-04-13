@@ -138,8 +138,7 @@ The Ghost service provides match visualization data for esports matches. It supp
 | # | Check | Description |
 |---|-------|-------------|
 | 1 | `[Setup] Bragi MatchTimeline status is OK` | Fetches match URNs from Bragi |
-| 2 | `[Setup] Bragi returned at least one match` | Ensures Bragi returned match data |
-| 3 | `[MatchStatus] Status is OK` | gRPC status code is 0 for first match |
+| 2 | `[MatchStatus] Status is OK` | gRPC status code is 0 for first match |
 | 4 | `[MatchStatus] Response message is not null` | Server returned a response body |
 | 5 | `[MatchStatus] Has matchStatus field` | matchStatus field is a string |
 | 6 | `[MatchStatus] matchStatus is a valid enum` | One of: UNKNOWN, AVAILABLE, UNAVAILABLE |
@@ -170,8 +169,7 @@ The Ghost service provides match visualization data for esports matches. It supp
 |---|-------|-------------|
 | 1 | `[Setup] Bragi CS2 timeline status is OK` | Fetches live CS2 match URNs |
 | 2 | `[Setup] Bragi Dota2 timeline status is OK` | Fetches live Dota2 match URNs |
-| 3 | `[Setup] Bragi returned at least one live CS2 or Dota2 match` | Ensures Bragi returned match data |
-| 4 | `[CS2Info] Status is OK or NOT_FOUND` | OK if visualized, NOT_FOUND if not |
+| 3 | `[CS2Info] Status is OK or NOT_FOUND` | OK if visualized, NOT_FOUND if not |
 | 5 | `[CS2Info] Response message is not null when status is OK` | Response body present when OK |
 | 6 | `[CS2Info] Has host field` | Host string present (when OK) |
 | 7 | `[CS2Info] Has mapName` | CS2 map name (when OK + CS2 data) |

@@ -33,29 +33,34 @@ export default function () {
   // --- Step 1: Get live match URNs from Bragi (Ghost only has data for live/visualized matches) ---
   bragiClient.connect(BRAGI_ADDR);
 
-  const cs2Res = bragiClient.invoke(
-    'bragi.Bragi/MatchTimeline',
-    { liveOnly: true, sport: 'SPORT_CS2' },
-    BRAGI_METADATA
-  );
+  let cs2Matches = [];
+  let dota2Matches = [];
+  try {
+    const cs2Res = bragiClient.invoke(
+      'bragi.Bragi/MatchTimeline',
+      { liveOnly: true, sport: 'SPORT_CS2' },
+      BRAGI_METADATA
+    );
 
-  const dota2Res = bragiClient.invoke(
-    'bragi.Bragi/MatchTimeline',
-    { liveOnly: true, sport: 'SPORT_DOTA2' },
-    BRAGI_METADATA
-  );
+    const dota2Res = bragiClient.invoke(
+      'bragi.Bragi/MatchTimeline',
+      { liveOnly: true, sport: 'SPORT_DOTA2' },
+      BRAGI_METADATA
+    );
 
-  check(cs2Res, {
-    '[Setup] Bragi CS2 timeline status is OK': (r) => r.status === grpc.StatusOK,
-  });
+    check(cs2Res, {
+      '[Setup] Bragi CS2 timeline status is OK': (r) => r.status === grpc.StatusOK,
+    });
 
-  check(dota2Res, {
-    '[Setup] Bragi Dota2 timeline status is OK': (r) => r.status === grpc.StatusOK,
-  });
+    check(dota2Res, {
+      '[Setup] Bragi Dota2 timeline status is OK': (r) => r.status === grpc.StatusOK,
+    });
 
-  const cs2Matches = cs2Res.message?.matches || [];
-  const dota2Matches = dota2Res.message?.matches || [];
-  bragiClient.close();
+    cs2Matches = cs2Res.message?.matches || [];
+    dota2Matches = dota2Res.message?.matches || [];
+  } finally {
+    bragiClient.close();
+  }
 
   const allMatches = [...cs2Matches, ...dota2Matches];
   if (allMatches.length === 0) {
@@ -65,7 +70,8 @@ export default function () {
   // --- Step 2: Connect to Ghost ---
   ghostClient.connect(GHOST_ADDR);
 
-  // --- Test 1: GetMatchInfo for a live CS2 match ---
+  try {
+    // --- Test 1: GetMatchInfo for a live CS2 match ---
   if (cs2Matches.length > 0) {
     const cs2MatchUrn = __ENV.CS2_MATCH_URN || cs2Matches[0].matchUrn;
 
@@ -154,6 +160,7 @@ export default function () {
   check(emptyRes, {
     '[EmptyURN] Returns expected error': (r) => r.status === grpc.StatusInvalidArgument,
   });
-
-  ghostClient.close();
+  } finally {
+    ghostClient.close();
+  }
 }

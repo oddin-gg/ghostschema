@@ -39,14 +39,18 @@ export default function () {
   // --- Step 1: Get real match URNs from Bragi ---
   bragiClient.connect(BRAGI_ADDR);
 
-  const timelineRes = bragiClient.invoke('bragi.Bragi/MatchTimeline', { liveOnly: false }, BRAGI_METADATA);
+  let matches = [];
+  try {
+    const timelineRes = bragiClient.invoke('bragi.Bragi/MatchTimeline', { liveOnly: false }, BRAGI_METADATA);
 
-  check(timelineRes, {
-    '[Setup] Bragi MatchTimeline status is OK': (r) => r.status === grpc.StatusOK,
-  });
+    check(timelineRes, {
+      '[Setup] Bragi MatchTimeline status is OK': (r) => r.status === grpc.StatusOK,
+    });
 
-  const matches = timelineRes.message?.matches || [];
-  bragiClient.close();
+    matches = timelineRes.message?.matches || [];
+  } finally {
+    bragiClient.close();
+  }
 
   if (matches.length === 0) {
     console.warn('No matches available from Bragi — skipping live-match tests, running error-case tests only');
@@ -55,55 +59,57 @@ export default function () {
   // --- Step 2: Connect to Ghost ---
   ghostClient.connect(GHOST_ADDR);
 
-  // --- Tests 1 & 2: Live-match-dependent (skipped when no matches available) ---
-  if (matches.length > 0) {
-    // --- Test 1: GetMatchStatus with a live/planned match ---
-    const matchUrn = __ENV.MATCH_URN || matches[0].matchUrn;
+  try {
+    // --- Tests 1 & 2: Live-match-dependent (skipped when no matches available) ---
+    if (matches.length > 0) {
+      // --- Test 1: GetMatchStatus with a live/planned match ---
+      const matchUrn = __ENV.MATCH_URN || matches[0].matchUrn;
 
-    const statusRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: matchUrn }, GHOST_METADATA);
+      const statusRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: matchUrn }, GHOST_METADATA);
 
-    check(statusRes, {
-      '[MatchStatus] Status is OK': (r) => r.status === grpc.StatusOK,
-      '[MatchStatus] Response message is not null': (r) => r.message != null,
+      check(statusRes, {
+        '[MatchStatus] Status is OK': (r) => r.status === grpc.StatusOK,
+        '[MatchStatus] Response message is not null': (r) => r.message != null,
+      });
+
+      if (statusRes.message) {
+        check(statusRes.message, {
+          '[MatchStatus] Has matchStatus field': (m) => typeof m.matchStatus === 'string',
+          '[MatchStatus] matchStatus is a valid enum': (m) => VALID_STATUSES.includes(m.matchStatus),
+        });
+      }
+
+      // --- Test 2: GetMatchStatus with multiple matches (validate consistency) ---
+      const secondMatchUrn = matches.length > 1 ? matches[1].matchUrn : null;
+
+      if (secondMatchUrn) {
+        const statusRes2 = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: secondMatchUrn }, GHOST_METADATA);
+
+        check(statusRes2, {
+          '[MatchStatus2] Status is OK': (r) => r.status === grpc.StatusOK,
+          '[MatchStatus2] Response message is not null': (r) => r.message != null,
+          '[MatchStatus2] matchStatus is a valid enum': (r) =>
+            r.message != null && VALID_STATUSES.includes(r.message.matchStatus),
+        });
+      }
+    }
+
+    // --- Test 3: GetMatchStatus with nonexistent match URN ---
+    const invalidRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: 'od:match:999999999' }, GHOST_METADATA);
+
+    check(invalidRes, {
+      '[InvalidMatch] Status is OK': (r) => r.status === grpc.StatusOK,
+      '[InvalidMatch] Returns a valid status enum': (r) =>
+        r.message != null && VALID_STATUSES.includes(r.message.matchStatus),
     });
 
-    if (statusRes.message) {
-      check(statusRes.message, {
-        '[MatchStatus] Has matchStatus field': (m) => typeof m.matchStatus === 'string',
-        '[MatchStatus] matchStatus is a valid enum': (m) => VALID_STATUSES.includes(m.matchStatus),
-      });
-    }
+    // --- Test 4: GetMatchStatus with empty URN ---
+    const emptyRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: '' }, GHOST_METADATA);
 
-    // --- Test 2: GetMatchStatus with multiple matches (validate consistency) ---
-    const secondMatchUrn = matches.length > 1 ? matches[1].matchUrn : null;
-
-    if (secondMatchUrn) {
-      const statusRes2 = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: secondMatchUrn }, GHOST_METADATA);
-
-      check(statusRes2, {
-        '[MatchStatus2] Status is OK': (r) => r.status === grpc.StatusOK,
-        '[MatchStatus2] Response message is not null': (r) => r.message != null,
-        '[MatchStatus2] matchStatus is a valid enum': (r) =>
-          r.message != null && VALID_STATUSES.includes(r.message.matchStatus),
-      });
-    }
+    check(emptyRes, {
+      '[EmptyURN] Returns expected error': (r) => r.status === grpc.StatusInvalidArgument,
+    });
+  } finally {
+    ghostClient.close();
   }
-
-  // --- Test 3: GetMatchStatus with nonexistent match URN ---
-  const invalidRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: 'od:match:999999999' }, GHOST_METADATA);
-
-  check(invalidRes, {
-    '[InvalidMatch] Status is OK': (r) => r.status === grpc.StatusOK,
-    '[InvalidMatch] Returns a valid status enum': (r) =>
-      r.message != null && VALID_STATUSES.includes(r.message.matchStatus),
-  });
-
-  // --- Test 4: GetMatchStatus with empty URN ---
-  const emptyRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: '' }, GHOST_METADATA);
-
-  check(emptyRes, {
-    '[EmptyURN] Returns expected error': (r) => r.status === grpc.StatusInvalidArgument,
-  });
-
-  ghostClient.close();
 }
