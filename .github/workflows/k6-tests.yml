@@ -1,0 +1,77 @@
+name: K6 gRPC Tests
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # Daily at 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      run_ghost_match_status:
+        description: 'Run ghost_match_status test'
+        type: boolean
+        default: true
+      run_ghost_match_info:
+        description: 'Run ghost_match_info test'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: k6-tests
+  cancel-in-progress: true
+
+jobs:
+  k6-tests:
+    runs-on: [self-hosted, linux]
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch bragi protos
+        working-directory: k6
+        run: bash setup_protos.sh
+
+      - name: Install K6
+        run: |
+          if command -v k6 &> /dev/null; then
+            echo "k6 already installed: $(k6 version)"
+          else
+            curl -fsSL https://dl.k6.io/key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/k6-archive-keyring.gpg
+            echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+            sudo apt-get update
+            sudo apt-get install -y k6
+          fi
+
+      - name: Run ghost_match_status
+        id: test_ghost_match_status
+        continue-on-error: true
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_ghost_match_status }}
+        working-directory: k6
+        run: k6 run ghost_match_status.js
+        env:
+          BRAGI_TOKEN: ${{ secrets.BRAGI_TOKEN }}
+          GHOST_TOKEN: ${{ secrets.GHOST_TOKEN }}
+
+      - name: Run ghost_match_info
+        id: test_ghost_match_info
+        continue-on-error: true
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_ghost_match_info }}
+        working-directory: k6
+        run: k6 run ghost_match_info.js
+        env:
+          BRAGI_TOKEN: ${{ secrets.BRAGI_TOKEN }}
+          GHOST_TOKEN: ${{ secrets.GHOST_TOKEN }}
+
+      - name: Check test results
+        if: always()
+        run: |
+          failed=false
+          if [ "${{ steps.test_ghost_match_status.outcome }}" = "failure" ]; then failed=true; fi
+          if [ "${{ steps.test_ghost_match_info.outcome }}" = "failure" ]; then failed=true; fi
+          if [ "$failed" = "true" ]; then
+            echo "One or more k6 tests failed"
+            exit 1
+          fi
