@@ -95,7 +95,7 @@ export default function (data) {
     }
 
     // --- Test 3: GetMatchStatus with nonexistent match URN ---
-    const invalidRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: 'od:match:999999999' }, GHOST_METADATA);
+    const invalidRes = ghostClient.invoke('ghost.Ghost/GetMatchStatus', { matchUrn: 'od:match:99999999999' }, GHOST_METADATA);
 
     check(invalidRes, {
       '[InvalidMatch] Status is OK': (r) => r.status === grpc.StatusOK,

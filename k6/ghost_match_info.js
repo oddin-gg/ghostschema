@@ -153,7 +153,7 @@ export default function (data) {
     }
 
     // --- Test 4: GetMatchInfo with nonexistent match URN (NOT_FOUND expected, OK also accepted) ---
-    const invalidRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: 'od:match:999999999' }, GHOST_METADATA);
+    const invalidRes = ghostClient.invoke('ghost.Ghost/GetMatchInfo', { matchUrn: 'od:match:99999999999' }, GHOST_METADATA);
 
     check(invalidRes, {
       '[InvalidMatch] Returns NOT_FOUND or OK': (r) =>
