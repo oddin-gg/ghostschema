@@ -13,7 +13,7 @@ if [[ ! -x ${GO_PROTOC_GEN} ]]; then
   exit 1
 fi
 
-protoc ./proto/ghost/*.proto -I ./proto \
+protoc ./proto/*/*.proto -I ./proto \
     --go_out=./go \
     --go-grpc_out=./go \
     --go-vtproto_out=./go \

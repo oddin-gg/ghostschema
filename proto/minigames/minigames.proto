@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package minigames;
+
+option go_package = "oddin.gg/minigames";
+option java_package = "com.oddin.minigames";
+
+// StartSessionRequest starts (or restarts) a minigames session for a player.
+// The client is identified by the token passed in gRPC metadata (same as the
+// Ghost service), so the request body carries only the player's betting handle.
+message StartSessionRequest {
+  // Player identity as known to the client (e.g. their betting handle). It is
+  // scoped to the authenticated client; the backend maps it to an opaque
+  // player_uuid.
+  string betting_handle = 1;
+}
+
+// Game is one entry in the minigames offering.
+message Game {
+  // Human-readable game name.
+  string name = 1;
+  // Full CDN asset URL for the game, with the started session's uuid appended
+  // as the `session` query parameter.
+  string asset_url = 2;
+}
+
+message StartSessionResponse {
+  // Opaque, stable identifier for the player across sessions and games.
+  string player_uuid = 1;
+  // Identifier of the session started by this call.
+  string session_uuid = 2;
+  // Games available to play in this session.
+  repeated Game games = 3;
+}
+
+service Minigames {
+  // StartSession creates a new session for the player, stopping any of the
+  // player's running session and plays first, and returns the player and
+  // session identifiers together with the available games.
+  rpc StartSession(StartSessionRequest) returns (StartSessionResponse);
+}
