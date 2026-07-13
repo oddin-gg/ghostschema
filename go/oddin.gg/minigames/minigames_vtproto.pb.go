@@ -5,6 +5,7 @@
 package minigames
 
 import (
+	timestamppb "github.com/planetscale/vtprotobuf/types/known/timestamppb"
 	proto "google.golang.org/protobuf/proto"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -126,6 +127,92 @@ func (this *StopSessionResponse) EqualVT(that *StopSessionResponse) bool {
 
 func (this *StopSessionResponse) EqualMessageVT(thatMsg proto.Message) bool {
 	that, ok := thatMsg.(*StopSessionResponse)
+	if !ok {
+		return false
+	}
+	return this.EqualVT(that)
+}
+func (this *LeaderboardRequest) EqualVT(that *LeaderboardRequest) bool {
+	if this == that {
+		return true
+	} else if this == nil || that == nil {
+		return false
+	}
+	if this.GameSlug != that.GameSlug {
+		return false
+	}
+	if !(*timestamppb.Timestamp)(this.FromTime).EqualVT((*timestamppb.Timestamp)(that.FromTime)) {
+		return false
+	}
+	if !(*timestamppb.Timestamp)(this.ToTime).EqualVT((*timestamppb.Timestamp)(that.ToTime)) {
+		return false
+	}
+	if this.Limit != that.Limit {
+		return false
+	}
+	return string(this.unknownFields) == string(that.unknownFields)
+}
+
+func (this *LeaderboardRequest) EqualMessageVT(thatMsg proto.Message) bool {
+	that, ok := thatMsg.(*LeaderboardRequest)
+	if !ok {
+		return false
+	}
+	return this.EqualVT(that)
+}
+func (this *LeaderboardEntry) EqualVT(that *LeaderboardEntry) bool {
+	if this == that {
+		return true
+	} else if this == nil || that == nil {
+		return false
+	}
+	if this.PlayerUuid != that.PlayerUuid {
+		return false
+	}
+	if this.BettingHandle != that.BettingHandle {
+		return false
+	}
+	if this.TotalScore != that.TotalScore {
+		return false
+	}
+	return string(this.unknownFields) == string(that.unknownFields)
+}
+
+func (this *LeaderboardEntry) EqualMessageVT(thatMsg proto.Message) bool {
+	that, ok := thatMsg.(*LeaderboardEntry)
+	if !ok {
+		return false
+	}
+	return this.EqualVT(that)
+}
+func (this *LeaderboardResponse) EqualVT(that *LeaderboardResponse) bool {
+	if this == that {
+		return true
+	} else if this == nil || that == nil {
+		return false
+	}
+	if len(this.Entries) != len(that.Entries) {
+		return false
+	}
+	for i, vx := range this.Entries {
+		vy := that.Entries[i]
+		if p, q := vx, vy; p != q {
+			if p == nil {
+				p = &LeaderboardEntry{}
+			}
+			if q == nil {
+				q = &LeaderboardEntry{}
+			}
+			if !p.EqualVT(q) {
+				return false
+			}
+		}
+	}
+	return string(this.unknownFields) == string(that.unknownFields)
+}
+
+func (this *LeaderboardResponse) EqualMessageVT(thatMsg proto.Message) bool {
+	that, ok := thatMsg.(*LeaderboardResponse)
 	if !ok {
 		return false
 	}

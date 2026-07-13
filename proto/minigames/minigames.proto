@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package minigames;
 
+import "google/protobuf/timestamp.proto";
+
 option go_package = "oddin.gg/minigames";
 option java_package = "com.oddin.minigames";
 
@@ -42,6 +44,34 @@ message StopSessionRequest {
 
 message StopSessionResponse {}
 
+// LeaderboardRequest asks for the top players of the authenticated client,
+// ranked by their total score over a time range.
+message LeaderboardRequest {
+  // Restrict to a single game by its slug; empty means across all games.
+  string game_slug = 1;
+  // Start of the time range, inclusive. Required.
+  google.protobuf.Timestamp from_time = 2;
+  // End of the time range, inclusive. Optional; defaults to now when unset.
+  google.protobuf.Timestamp to_time = 3;
+  // Maximum number of players to return. Capped at 100.
+  int32 limit = 4;
+}
+
+// LeaderboardEntry is one player's ranking row.
+message LeaderboardEntry {
+  // Opaque, stable player identifier.
+  string player_uuid = 1;
+  // The player's betting handle as supplied by the client.
+  string betting_handle = 2;
+  // Sum of the player's play scores over the requested range and game(s).
+  double total_score = 3;
+}
+
+message LeaderboardResponse {
+  // Players ordered by total_score descending.
+  repeated LeaderboardEntry entries = 1;
+}
+
 service Minigames {
   // StartSession creates a new session for the player, stopping any of the
   // player's running session and plays first, and returns the player and
@@ -52,4 +82,8 @@ service Minigames {
   // An unknown, already-finished, or foreign session is rejected with
   // INVALID_ARGUMENT.
   rpc StopSession(StopSessionRequest) returns (StopSessionResponse);
+
+  // Leaderboard returns the client's top players by total score over a time
+  // range, optionally for a single game.
+  rpc Leaderboard(LeaderboardRequest) returns (LeaderboardResponse);
 }

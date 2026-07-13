@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	Minigames_StartSession_FullMethodName = "/minigames.Minigames/StartSession"
 	Minigames_StopSession_FullMethodName  = "/minigames.Minigames/StopSession"
+	Minigames_Leaderboard_FullMethodName  = "/minigames.Minigames/Leaderboard"
 )
 
 // MinigamesClient is the client API for Minigames service.
@@ -35,6 +36,9 @@ type MinigamesClient interface {
 	// An unknown, already-finished, or foreign session is rejected with
 	// INVALID_ARGUMENT.
 	StopSession(ctx context.Context, in *StopSessionRequest, opts ...grpc.CallOption) (*StopSessionResponse, error)
+	// Leaderboard returns the client's top players by total score over a time
+	// range, optionally for a single game.
+	Leaderboard(ctx context.Context, in *LeaderboardRequest, opts ...grpc.CallOption) (*LeaderboardResponse, error)
 }
 
 type minigamesClient struct {
@@ -65,6 +69,16 @@ func (c *minigamesClient) StopSession(ctx context.Context, in *StopSessionReques
 	return out, nil
 }
 
+func (c *minigamesClient) Leaderboard(ctx context.Context, in *LeaderboardRequest, opts ...grpc.CallOption) (*LeaderboardResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LeaderboardResponse)
+	err := c.cc.Invoke(ctx, Minigames_Leaderboard_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MinigamesServer is the server API for Minigames service.
 // All implementations must embed UnimplementedMinigamesServer
 // for forward compatibility.
@@ -77,6 +91,9 @@ type MinigamesServer interface {
 	// An unknown, already-finished, or foreign session is rejected with
 	// INVALID_ARGUMENT.
 	StopSession(context.Context, *StopSessionRequest) (*StopSessionResponse, error)
+	// Leaderboard returns the client's top players by total score over a time
+	// range, optionally for a single game.
+	Leaderboard(context.Context, *LeaderboardRequest) (*LeaderboardResponse, error)
 	mustEmbedUnimplementedMinigamesServer()
 }
 
@@ -92,6 +109,9 @@ func (UnimplementedMinigamesServer) StartSession(context.Context, *StartSessionR
 }
 func (UnimplementedMinigamesServer) StopSession(context.Context, *StopSessionRequest) (*StopSessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StopSession not implemented")
+}
+func (UnimplementedMinigamesServer) Leaderboard(context.Context, *LeaderboardRequest) (*LeaderboardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Leaderboard not implemented")
 }
 func (UnimplementedMinigamesServer) mustEmbedUnimplementedMinigamesServer() {}
 func (UnimplementedMinigamesServer) testEmbeddedByValue()                   {}
@@ -150,6 +170,24 @@ func _Minigames_StopSession_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Minigames_Leaderboard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LeaderboardRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MinigamesServer).Leaderboard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Minigames_Leaderboard_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MinigamesServer).Leaderboard(ctx, req.(*LeaderboardRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Minigames_ServiceDesc is the grpc.ServiceDesc for Minigames service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -164,6 +202,10 @@ var Minigames_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StopSession",
 			Handler:    _Minigames_StopSession_Handler,
+		},
+		{
+			MethodName: "Leaderboard",
+			Handler:    _Minigames_Leaderboard_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
