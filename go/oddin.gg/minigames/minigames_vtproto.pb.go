@@ -96,3 +96,38 @@ func (this *StartSessionResponse) EqualMessageVT(thatMsg proto.Message) bool {
 	}
 	return this.EqualVT(that)
 }
+func (this *StopSessionRequest) EqualVT(that *StopSessionRequest) bool {
+	if this == that {
+		return true
+	} else if this == nil || that == nil {
+		return false
+	}
+	if this.SessionUuid != that.SessionUuid {
+		return false
+	}
+	return string(this.unknownFields) == string(that.unknownFields)
+}
+
+func (this *StopSessionRequest) EqualMessageVT(thatMsg proto.Message) bool {
+	that, ok := thatMsg.(*StopSessionRequest)
+	if !ok {
+		return false
+	}
+	return this.EqualVT(that)
+}
+func (this *StopSessionResponse) EqualVT(that *StopSessionResponse) bool {
+	if this == that {
+		return true
+	} else if this == nil || that == nil {
+		return false
+	}
+	return string(this.unknownFields) == string(that.unknownFields)
+}
+
+func (this *StopSessionResponse) EqualMessageVT(thatMsg proto.Message) bool {
+	that, ok := thatMsg.(*StopSessionResponse)
+	if !ok {
+		return false
+	}
+	return this.EqualVT(that)
+}

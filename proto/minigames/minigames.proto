@@ -33,9 +33,23 @@ message StartSessionResponse {
   repeated Game games = 3;
 }
 
+// StopSessionRequest ends a running session. The client is identified by the
+// token in gRPC metadata; the session must belong to that client.
+message StopSessionRequest {
+  // Identifier of the session to stop (from StartSessionResponse).
+  string session_uuid = 1;
+}
+
+message StopSessionResponse {}
+
 service Minigames {
   // StartSession creates a new session for the player, stopping any of the
   // player's running session and plays first, and returns the player and
   // session identifiers together with the available games.
   rpc StartSession(StartSessionRequest) returns (StartSessionResponse);
+
+  // StopSession ends the given running session (and any running play under it).
+  // An unknown, already-finished, or foreign session is rejected with
+  // INVALID_ARGUMENT.
+  rpc StopSession(StopSessionRequest) returns (StopSessionResponse);
 }

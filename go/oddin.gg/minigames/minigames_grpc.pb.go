@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	Minigames_StartSession_FullMethodName = "/minigames.Minigames/StartSession"
+	Minigames_StopSession_FullMethodName  = "/minigames.Minigames/StopSession"
 )
 
 // MinigamesClient is the client API for Minigames service.
@@ -30,6 +31,10 @@ type MinigamesClient interface {
 	// player's running session and plays first, and returns the player and
 	// session identifiers together with the available games.
 	StartSession(ctx context.Context, in *StartSessionRequest, opts ...grpc.CallOption) (*StartSessionResponse, error)
+	// StopSession ends the given running session (and any running play under it).
+	// An unknown, already-finished, or foreign session is rejected with
+	// INVALID_ARGUMENT.
+	StopSession(ctx context.Context, in *StopSessionRequest, opts ...grpc.CallOption) (*StopSessionResponse, error)
 }
 
 type minigamesClient struct {
@@ -50,6 +55,16 @@ func (c *minigamesClient) StartSession(ctx context.Context, in *StartSessionRequ
 	return out, nil
 }
 
+func (c *minigamesClient) StopSession(ctx context.Context, in *StopSessionRequest, opts ...grpc.CallOption) (*StopSessionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StopSessionResponse)
+	err := c.cc.Invoke(ctx, Minigames_StopSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MinigamesServer is the server API for Minigames service.
 // All implementations must embed UnimplementedMinigamesServer
 // for forward compatibility.
@@ -58,6 +73,10 @@ type MinigamesServer interface {
 	// player's running session and plays first, and returns the player and
 	// session identifiers together with the available games.
 	StartSession(context.Context, *StartSessionRequest) (*StartSessionResponse, error)
+	// StopSession ends the given running session (and any running play under it).
+	// An unknown, already-finished, or foreign session is rejected with
+	// INVALID_ARGUMENT.
+	StopSession(context.Context, *StopSessionRequest) (*StopSessionResponse, error)
 	mustEmbedUnimplementedMinigamesServer()
 }
 
@@ -70,6 +89,9 @@ type UnimplementedMinigamesServer struct{}
 
 func (UnimplementedMinigamesServer) StartSession(context.Context, *StartSessionRequest) (*StartSessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartSession not implemented")
+}
+func (UnimplementedMinigamesServer) StopSession(context.Context, *StopSessionRequest) (*StopSessionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StopSession not implemented")
 }
 func (UnimplementedMinigamesServer) mustEmbedUnimplementedMinigamesServer() {}
 func (UnimplementedMinigamesServer) testEmbeddedByValue()                   {}
@@ -110,6 +132,24 @@ func _Minigames_StartSession_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Minigames_StopSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StopSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MinigamesServer).StopSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Minigames_StopSession_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MinigamesServer).StopSession(ctx, req.(*StopSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Minigames_ServiceDesc is the grpc.ServiceDesc for Minigames service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -120,6 +160,10 @@ var Minigames_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StartSession",
 			Handler:    _Minigames_StartSession_Handler,
+		},
+		{
+			MethodName: "StopSession",
+			Handler:    _Minigames_StopSession_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
