@@ -44,8 +44,19 @@ message StopSessionRequest {
 
 message StopSessionResponse {}
 
+// LeaderboardAggregation selects how a player's play scores are combined into
+// their ranking score.
+enum LeaderboardAggregation {
+  // Defaults to SUM.
+  LEADERBOARD_AGGREGATION_UNSPECIFIED = 0;
+  // Sum of the player's play scores.
+  LEADERBOARD_AGGREGATION_SUM = 1;
+  // The player's single highest play score.
+  LEADERBOARD_AGGREGATION_MAX = 2;
+}
+
 // LeaderboardRequest asks for the top players of the authenticated client,
-// ranked by their total score over a time range.
+// ranked by their score over a time range.
 message LeaderboardRequest {
   // Restrict to a single game by its slug; empty means across all games.
   string game_slug = 1;
@@ -55,6 +66,9 @@ message LeaderboardRequest {
   google.protobuf.Timestamp to_time = 3;
   // Maximum number of players to return. Capped at 100.
   int32 limit = 4;
+  // How to combine a player's play scores into their ranking score. Defaults
+  // to SUM when unspecified.
+  LeaderboardAggregation aggregation = 5;
 }
 
 // LeaderboardEntry is one player's ranking row.

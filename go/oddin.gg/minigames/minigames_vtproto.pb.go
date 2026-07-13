@@ -150,6 +150,9 @@ func (this *LeaderboardRequest) EqualVT(that *LeaderboardRequest) bool {
 	if this.Limit != that.Limit {
 		return false
 	}
+	if this.Aggregation != that.Aggregation {
+		return false
+	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
 
