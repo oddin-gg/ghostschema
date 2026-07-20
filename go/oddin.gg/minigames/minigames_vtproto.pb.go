@@ -103,7 +103,7 @@ func (this *StopSessionRequest) EqualVT(that *StopSessionRequest) bool {
 	} else if this == nil || that == nil {
 		return false
 	}
-	if this.SessionToken != that.SessionToken {
+	if this.BettingHandle != that.BettingHandle {
 		return false
 	}
 	return string(this.unknownFields) == string(that.unknownFields)

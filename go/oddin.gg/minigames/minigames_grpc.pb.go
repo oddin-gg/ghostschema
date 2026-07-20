@@ -32,9 +32,9 @@ type MinigamesClient interface {
 	// together with the player identifier and the available games (each carrying
 	// the token in its asset URL).
 	StartSession(ctx context.Context, in *StartSessionRequest, opts ...grpc.CallOption) (*StartSessionResponse, error)
-	// StopSession best-effort stops the player's currently running play, if any.
-	// The session token must be valid and belong to the calling client; an
-	// invalid or foreign token is rejected with INVALID_ARGUMENT.
+	// StopSession best-effort stops the currently running play (if any) of the
+	// client's player identified by betting_handle. An unknown handle is a no-op
+	// success; there is no session state to revoke.
 	StopSession(ctx context.Context, in *StopSessionRequest, opts ...grpc.CallOption) (*StopSessionResponse, error)
 	// Leaderboard returns the client's top players by total score over a time
 	// range, optionally for a single game.
@@ -87,9 +87,9 @@ type MinigamesServer interface {
 	// together with the player identifier and the available games (each carrying
 	// the token in its asset URL).
 	StartSession(context.Context, *StartSessionRequest) (*StartSessionResponse, error)
-	// StopSession best-effort stops the player's currently running play, if any.
-	// The session token must be valid and belong to the calling client; an
-	// invalid or foreign token is rejected with INVALID_ARGUMENT.
+	// StopSession best-effort stops the currently running play (if any) of the
+	// client's player identified by betting_handle. An unknown handle is a no-op
+	// success; there is no session state to revoke.
 	StopSession(context.Context, *StopSessionRequest) (*StopSessionResponse, error)
 	// Leaderboard returns the client's top players by total score over a time
 	// range, optionally for a single game.
