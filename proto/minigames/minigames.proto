@@ -7,9 +7,9 @@ import "google/protobuf/timestamp.proto";
 option go_package = "oddin.gg/minigames";
 option java_package = "com.oddin.minigames";
 
-// StartSessionRequest starts (or restarts) a minigames session for a player.
-// The client is identified by the token passed in gRPC metadata (same as the
-// Ghost service), so the request body carries only the player's betting handle.
+// StartSessionRequest starts a minigames session for a player. The client is
+// identified by the token passed in gRPC metadata (same as the Ghost service),
+// so the request body carries only the player's betting handle.
 message StartSessionRequest {
   // Player identity as known to the client (e.g. their betting handle). It is
   // scoped to the authenticated client; the backend maps it to an opaque
@@ -21,25 +21,28 @@ message StartSessionRequest {
 message Game {
   // Human-readable game name.
   string name = 1;
-  // Full CDN asset URL for the game, with the started session's uuid appended
-  // as the `session` query parameter.
+  // Full CDN asset URL for the game, with the session token appended as the
+  // `session` URL fragment (`#session=<token>`) so it stays client-side.
   string asset_url = 2;
 }
 
 message StartSessionResponse {
   // Opaque, stable identifier for the player across sessions and games.
   string player_uuid = 1;
-  // Identifier of the session started by this call.
-  string session_uuid = 2;
+  // Signed, stateless session token for this session (a JWT). It is embedded in
+  // each game's asset_url fragment and sent back on StartPlay/StopSession; the
+  // backend keeps no session state, validating the token by signature and
+  // expiry.
+  string session_token = 2;
   // Games available to play in this session.
   repeated Game games = 3;
 }
 
 // StopSessionRequest ends a running session. The client is identified by the
-// token in gRPC metadata; the session must belong to that client.
+// token in gRPC metadata; the session token must belong to that client.
 message StopSessionRequest {
-  // Identifier of the session to stop (from StartSessionResponse).
-  string session_uuid = 1;
+  // The session token to stop (from StartSessionResponse).
+  string session_token = 1;
 }
 
 message StopSessionResponse {}
@@ -87,14 +90,14 @@ message LeaderboardResponse {
 }
 
 service Minigames {
-  // StartSession creates a new session for the player, stopping any of the
-  // player's running session and plays first, and returns the player and
-  // session identifiers together with the available games.
+  // StartSession mints a stateless session token for the player and returns it
+  // together with the player identifier and the available games (each carrying
+  // the token in its asset URL).
   rpc StartSession(StartSessionRequest) returns (StartSessionResponse);
 
-  // StopSession ends the given running session (and any running play under it).
-  // An unknown, already-finished, or foreign session is rejected with
-  // INVALID_ARGUMENT.
+  // StopSession best-effort stops the player's currently running play, if any.
+  // The session token must be valid and belong to the calling client; an
+  // invalid or foreign token is rejected with INVALID_ARGUMENT.
   rpc StopSession(StopSessionRequest) returns (StopSessionResponse);
 
   // Leaderboard returns the client's top players by total score over a time

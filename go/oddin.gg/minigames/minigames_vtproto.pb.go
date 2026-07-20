@@ -67,7 +67,7 @@ func (this *StartSessionResponse) EqualVT(that *StartSessionResponse) bool {
 	if this.PlayerUuid != that.PlayerUuid {
 		return false
 	}
-	if this.SessionUuid != that.SessionUuid {
+	if this.SessionToken != that.SessionToken {
 		return false
 	}
 	if len(this.Games) != len(that.Games) {
@@ -103,7 +103,7 @@ func (this *StopSessionRequest) EqualVT(that *StopSessionRequest) bool {
 	} else if this == nil || that == nil {
 		return false
 	}
-	if this.SessionUuid != that.SessionUuid {
+	if this.SessionToken != that.SessionToken {
 		return false
 	}
 	return string(this.unknownFields) == string(that.unknownFields)
