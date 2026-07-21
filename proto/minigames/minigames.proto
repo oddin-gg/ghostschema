@@ -91,6 +91,30 @@ message LeaderboardResponse {
   repeated LeaderboardEntry entries = 1;
 }
 
+// PlayerScoreRequest asks for one player's aggregated score over a time range.
+// The client is identified by the token in gRPC metadata; the player by the
+// same betting_handle used elsewhere.
+message PlayerScoreRequest {
+  // Player identity as known to the client (the same betting_handle used at
+  // StartSession), scoped to the authenticated client.
+  string betting_handle = 1;
+  // Start of the time range, inclusive. Required.
+  google.protobuf.Timestamp from_time = 2;
+  // End of the time range, inclusive. Optional; defaults to now when unset.
+  google.protobuf.Timestamp to_time = 3;
+  // How to combine the player's play scores. Defaults to SUM when unspecified.
+  LeaderboardAggregation aggregation = 4;
+}
+
+message PlayerScoreResponse {
+  // The player's aggregated (sum or max) play score over the range, across all
+  // games. Zero when found is false.
+  double total_score = 1;
+  // Whether the player had any scored plays in the range. Distinguishes "no
+  // scored plays" from a genuine score of zero.
+  bool found = 2;
+}
+
 service Minigames {
   // StartSession mints a stateless session token for the player and returns it
   // together with the player identifier and the available games (each carrying
@@ -105,4 +129,8 @@ service Minigames {
   // Leaderboard returns the client's top players by total score over a time
   // range, optionally for a single game.
   rpc Leaderboard(LeaderboardRequest) returns (LeaderboardResponse);
+
+  // PlayerScore returns one player's aggregated (sum or max) score over a time
+  // range, identified by betting_handle.
+  rpc PlayerScore(PlayerScoreRequest) returns (PlayerScoreResponse);
 }

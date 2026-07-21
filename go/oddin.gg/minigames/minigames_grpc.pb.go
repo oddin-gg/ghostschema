@@ -22,6 +22,7 @@ const (
 	Minigames_StartSession_FullMethodName = "/minigames.Minigames/StartSession"
 	Minigames_StopSession_FullMethodName  = "/minigames.Minigames/StopSession"
 	Minigames_Leaderboard_FullMethodName  = "/minigames.Minigames/Leaderboard"
+	Minigames_PlayerScore_FullMethodName  = "/minigames.Minigames/PlayerScore"
 )
 
 // MinigamesClient is the client API for Minigames service.
@@ -39,6 +40,9 @@ type MinigamesClient interface {
 	// Leaderboard returns the client's top players by total score over a time
 	// range, optionally for a single game.
 	Leaderboard(ctx context.Context, in *LeaderboardRequest, opts ...grpc.CallOption) (*LeaderboardResponse, error)
+	// PlayerScore returns one player's aggregated (sum or max) score over a time
+	// range, identified by betting_handle.
+	PlayerScore(ctx context.Context, in *PlayerScoreRequest, opts ...grpc.CallOption) (*PlayerScoreResponse, error)
 }
 
 type minigamesClient struct {
@@ -79,6 +83,16 @@ func (c *minigamesClient) Leaderboard(ctx context.Context, in *LeaderboardReques
 	return out, nil
 }
 
+func (c *minigamesClient) PlayerScore(ctx context.Context, in *PlayerScoreRequest, opts ...grpc.CallOption) (*PlayerScoreResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PlayerScoreResponse)
+	err := c.cc.Invoke(ctx, Minigames_PlayerScore_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MinigamesServer is the server API for Minigames service.
 // All implementations must embed UnimplementedMinigamesServer
 // for forward compatibility.
@@ -94,6 +108,9 @@ type MinigamesServer interface {
 	// Leaderboard returns the client's top players by total score over a time
 	// range, optionally for a single game.
 	Leaderboard(context.Context, *LeaderboardRequest) (*LeaderboardResponse, error)
+	// PlayerScore returns one player's aggregated (sum or max) score over a time
+	// range, identified by betting_handle.
+	PlayerScore(context.Context, *PlayerScoreRequest) (*PlayerScoreResponse, error)
 	mustEmbedUnimplementedMinigamesServer()
 }
 
@@ -112,6 +129,9 @@ func (UnimplementedMinigamesServer) StopSession(context.Context, *StopSessionReq
 }
 func (UnimplementedMinigamesServer) Leaderboard(context.Context, *LeaderboardRequest) (*LeaderboardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Leaderboard not implemented")
+}
+func (UnimplementedMinigamesServer) PlayerScore(context.Context, *PlayerScoreRequest) (*PlayerScoreResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlayerScore not implemented")
 }
 func (UnimplementedMinigamesServer) mustEmbedUnimplementedMinigamesServer() {}
 func (UnimplementedMinigamesServer) testEmbeddedByValue()                   {}
@@ -188,6 +208,24 @@ func _Minigames_Leaderboard_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Minigames_PlayerScore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PlayerScoreRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MinigamesServer).PlayerScore(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Minigames_PlayerScore_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MinigamesServer).PlayerScore(ctx, req.(*PlayerScoreRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Minigames_ServiceDesc is the grpc.ServiceDesc for Minigames service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -206,6 +244,10 @@ var Minigames_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Leaderboard",
 			Handler:    _Minigames_Leaderboard_Handler,
+		},
+		{
+			MethodName: "PlayerScore",
+			Handler:    _Minigames_PlayerScore_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

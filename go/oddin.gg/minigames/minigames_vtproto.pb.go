@@ -221,3 +221,53 @@ func (this *LeaderboardResponse) EqualMessageVT(thatMsg proto.Message) bool {
 	}
 	return this.EqualVT(that)
 }
+func (this *PlayerScoreRequest) EqualVT(that *PlayerScoreRequest) bool {
+	if this == that {
+		return true
+	} else if this == nil || that == nil {
+		return false
+	}
+	if this.BettingHandle != that.BettingHandle {
+		return false
+	}
+	if !(*timestamppb.Timestamp)(this.FromTime).EqualVT((*timestamppb.Timestamp)(that.FromTime)) {
+		return false
+	}
+	if !(*timestamppb.Timestamp)(this.ToTime).EqualVT((*timestamppb.Timestamp)(that.ToTime)) {
+		return false
+	}
+	if this.Aggregation != that.Aggregation {
+		return false
+	}
+	return string(this.unknownFields) == string(that.unknownFields)
+}
+
+func (this *PlayerScoreRequest) EqualMessageVT(thatMsg proto.Message) bool {
+	that, ok := thatMsg.(*PlayerScoreRequest)
+	if !ok {
+		return false
+	}
+	return this.EqualVT(that)
+}
+func (this *PlayerScoreResponse) EqualVT(that *PlayerScoreResponse) bool {
+	if this == that {
+		return true
+	} else if this == nil || that == nil {
+		return false
+	}
+	if this.TotalScore != that.TotalScore {
+		return false
+	}
+	if this.Found != that.Found {
+		return false
+	}
+	return string(this.unknownFields) == string(that.unknownFields)
+}
+
+func (this *PlayerScoreResponse) EqualMessageVT(thatMsg proto.Message) bool {
+	that, ok := thatMsg.(*PlayerScoreResponse)
+	if !ok {
+		return false
+	}
+	return this.EqualVT(that)
+}
