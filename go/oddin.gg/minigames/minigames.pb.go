@@ -186,9 +186,8 @@ type StartSessionResponse struct {
 	// Opaque, stable identifier for the player across sessions and games.
 	PlayerUuid string `protobuf:"bytes,1,opt,name=player_uuid,json=playerUuid,proto3" json:"player_uuid,omitempty"`
 	// Signed, stateless session token for this session (a JWT). It is embedded in
-	// each game's asset_url fragment and sent back on StartPlay/StopSession; the
-	// backend keeps no session state, validating the token by signature and
-	// expiry.
+	// each game's asset_url fragment and sent back on StartPlay; the backend keeps
+	// no session state, validating the token by signature and expiry.
 	SessionToken string `protobuf:"bytes,2,opt,name=session_token,json=sessionToken,proto3" json:"session_token,omitempty"`
 	// Games available to play in this session.
 	Games         []*Game `protobuf:"bytes,3,rep,name=games,proto3" json:"games,omitempty"`

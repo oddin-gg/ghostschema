@@ -30,9 +30,8 @@ message StartSessionResponse {
   // Opaque, stable identifier for the player across sessions and games.
   string player_uuid = 1;
   // Signed, stateless session token for this session (a JWT). It is embedded in
-  // each game's asset_url fragment and sent back on StartPlay/StopSession; the
-  // backend keeps no session state, validating the token by signature and
-  // expiry.
+  // each game's asset_url fragment and sent back on StartPlay; the backend keeps
+  // no session state, validating the token by signature and expiry.
   string session_token = 2;
   // Games available to play in this session.
   repeated Game games = 3;
