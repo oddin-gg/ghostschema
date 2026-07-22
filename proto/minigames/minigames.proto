@@ -38,17 +38,6 @@ message StartSessionResponse {
   repeated Game games = 3;
 }
 
-// StopSessionRequest ends a player's session. The client is identified by the
-// token in gRPC metadata; the player is identified by the same betting_handle
-// used to start the session, so the backend need not persist the session token.
-message StopSessionRequest {
-  // Player identity as known to the client (the same betting_handle passed to
-  // StartSession), scoped to the authenticated client.
-  string betting_handle = 1;
-}
-
-message StopSessionResponse {}
-
 // LeaderboardAggregation selects how a player's play scores are combined into
 // their ranking score.
 enum LeaderboardAggregation {
@@ -120,11 +109,6 @@ service Minigames {
   // together with the player identifier and the available games (each carrying
   // the token in its asset URL).
   rpc StartSession(StartSessionRequest) returns (StartSessionResponse);
-
-  // StopSession best-effort stops the currently running play (if any) of the
-  // client's player identified by betting_handle. An unknown handle is a no-op
-  // success; there is no session state to revoke.
-  rpc StopSession(StopSessionRequest) returns (StopSessionResponse);
 
   // Leaderboard returns the client's top players by total score over a time
   // range, optionally for a single game.

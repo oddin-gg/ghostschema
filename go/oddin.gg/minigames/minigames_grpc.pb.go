@@ -20,7 +20,6 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	Minigames_StartSession_FullMethodName = "/minigames.Minigames/StartSession"
-	Minigames_StopSession_FullMethodName  = "/minigames.Minigames/StopSession"
 	Minigames_Leaderboard_FullMethodName  = "/minigames.Minigames/Leaderboard"
 	Minigames_PlayerScore_FullMethodName  = "/minigames.Minigames/PlayerScore"
 )
@@ -33,10 +32,6 @@ type MinigamesClient interface {
 	// together with the player identifier and the available games (each carrying
 	// the token in its asset URL).
 	StartSession(ctx context.Context, in *StartSessionRequest, opts ...grpc.CallOption) (*StartSessionResponse, error)
-	// StopSession best-effort stops the currently running play (if any) of the
-	// client's player identified by betting_handle. An unknown handle is a no-op
-	// success; there is no session state to revoke.
-	StopSession(ctx context.Context, in *StopSessionRequest, opts ...grpc.CallOption) (*StopSessionResponse, error)
 	// Leaderboard returns the client's top players by total score over a time
 	// range, optionally for a single game.
 	Leaderboard(ctx context.Context, in *LeaderboardRequest, opts ...grpc.CallOption) (*LeaderboardResponse, error)
@@ -57,16 +52,6 @@ func (c *minigamesClient) StartSession(ctx context.Context, in *StartSessionRequ
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(StartSessionResponse)
 	err := c.cc.Invoke(ctx, Minigames_StartSession_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *minigamesClient) StopSession(ctx context.Context, in *StopSessionRequest, opts ...grpc.CallOption) (*StopSessionResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StopSessionResponse)
-	err := c.cc.Invoke(ctx, Minigames_StopSession_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -101,10 +86,6 @@ type MinigamesServer interface {
 	// together with the player identifier and the available games (each carrying
 	// the token in its asset URL).
 	StartSession(context.Context, *StartSessionRequest) (*StartSessionResponse, error)
-	// StopSession best-effort stops the currently running play (if any) of the
-	// client's player identified by betting_handle. An unknown handle is a no-op
-	// success; there is no session state to revoke.
-	StopSession(context.Context, *StopSessionRequest) (*StopSessionResponse, error)
 	// Leaderboard returns the client's top players by total score over a time
 	// range, optionally for a single game.
 	Leaderboard(context.Context, *LeaderboardRequest) (*LeaderboardResponse, error)
@@ -123,9 +104,6 @@ type UnimplementedMinigamesServer struct{}
 
 func (UnimplementedMinigamesServer) StartSession(context.Context, *StartSessionRequest) (*StartSessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartSession not implemented")
-}
-func (UnimplementedMinigamesServer) StopSession(context.Context, *StopSessionRequest) (*StopSessionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StopSession not implemented")
 }
 func (UnimplementedMinigamesServer) Leaderboard(context.Context, *LeaderboardRequest) (*LeaderboardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Leaderboard not implemented")
@@ -168,24 +146,6 @@ func _Minigames_StartSession_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MinigamesServer).StartSession(ctx, req.(*StartSessionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Minigames_StopSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StopSessionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MinigamesServer).StopSession(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Minigames_StopSession_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MinigamesServer).StopSession(ctx, req.(*StopSessionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -236,10 +196,6 @@ var Minigames_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StartSession",
 			Handler:    _Minigames_StartSession_Handler,
-		},
-		{
-			MethodName: "StopSession",
-			Handler:    _Minigames_StopSession_Handler,
 		},
 		{
 			MethodName: "Leaderboard",
