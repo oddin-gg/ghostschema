@@ -29,8 +29,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MinigamesClient interface {
 	// StartSession mints a stateless session token for the player and returns it
-	// together with the player identifier and the available games (each carrying
-	// the token in its asset URL).
+	// together with the player identifier and the per-client lobby URL (carrying
+	// the token in its fragment). The lobby then lists games and reads
+	// leaderboards over HTTP.
 	StartSession(ctx context.Context, in *StartSessionRequest, opts ...grpc.CallOption) (*StartSessionResponse, error)
 	// Leaderboard returns the client's top players by total score over a time
 	// range, optionally for a single game.
@@ -83,8 +84,9 @@ func (c *minigamesClient) PlayerScore(ctx context.Context, in *PlayerScoreReques
 // for forward compatibility.
 type MinigamesServer interface {
 	// StartSession mints a stateless session token for the player and returns it
-	// together with the player identifier and the available games (each carrying
-	// the token in its asset URL).
+	// together with the player identifier and the per-client lobby URL (carrying
+	// the token in its fragment). The lobby then lists games and reads
+	// leaderboards over HTTP.
 	StartSession(context.Context, *StartSessionRequest) (*StartSessionResponse, error)
 	// Leaderboard returns the client's top players by total score over a time
 	// range, optionally for a single game.

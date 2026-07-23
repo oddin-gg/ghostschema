@@ -87,6 +87,9 @@ func (this *StartSessionResponse) EqualVT(that *StartSessionResponse) bool {
 			}
 		}
 	}
+	if this.LobbyUrl != that.LobbyUrl {
+		return false
+	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
 
