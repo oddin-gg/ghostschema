@@ -1,0 +1,115 @@
+syntax = "proto3";
+
+package minigames;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "oddin.gg/minigames";
+option java_package = "com.oddin.minigames";
+
+// StartSessionRequest starts a minigames session for a player. The client is
+// identified by the token passed in gRPC metadata (same as the Ghost service),
+// so the request body carries only the player's betting handle.
+message StartSessionRequest {
+  // Player identity as known to the client (e.g. their betting handle). It is
+  // scoped to the authenticated client; the backend maps it to an opaque
+  // player_uuid.
+  string betting_handle = 1;
+}
+
+message StartSessionResponse {
+  // Opaque, stable identifier for the player across sessions and games.
+  string player_uuid = 1;
+  // Signed, stateless session token for this session (a JWT). It is embedded in
+  // the lobby_url fragment and sent back on StartPlay / StopPlay and the HTTP
+  // lobby endpoints; the backend keeps no session state, validating the token
+  // by signature and expiry.
+  string session_token = 2;
+  // Per-client lobby URL for this session, with the session token in its
+  // `session` URL fragment (`<lobby-host>#session=<token>`). The operator embeds
+  // it in the player's browser; the lobby lists games (HTTP GET /games) and
+  // reads leaderboards over HTTP with the token.
+  string lobby_url = 3;
+}
+
+// LeaderboardAggregation selects how a player's play scores are combined into
+// their ranking score.
+enum LeaderboardAggregation {
+  // Defaults to SUM.
+  LEADERBOARD_AGGREGATION_UNSPECIFIED = 0;
+  // Sum of the player's play scores.
+  LEADERBOARD_AGGREGATION_SUM = 1;
+  // The player's single highest play score.
+  LEADERBOARD_AGGREGATION_MAX = 2;
+}
+
+// LeaderboardRequest asks for the top players of the authenticated client,
+// ranked by their score over a time range.
+message LeaderboardRequest {
+  // Restrict to a single game by its slug; empty means across all games.
+  string game_slug = 1;
+  // Start of the time range, inclusive. Required.
+  google.protobuf.Timestamp from_time = 2;
+  // End of the time range, inclusive. Optional; defaults to now when unset.
+  google.protobuf.Timestamp to_time = 3;
+  // Maximum number of players to return. Capped at 100.
+  int32 limit = 4;
+  // How to combine a player's play scores into their ranking score. Defaults
+  // to SUM when unspecified.
+  LeaderboardAggregation aggregation = 5;
+}
+
+// LeaderboardEntry is one player's ranking row.
+message LeaderboardEntry {
+  // Opaque, stable player identifier.
+  string player_uuid = 1;
+  // The player's betting handle as supplied by the client.
+  string betting_handle = 2;
+  // Sum of the player's play scores over the requested range and game(s).
+  double total_score = 3;
+}
+
+message LeaderboardResponse {
+  // Players ordered by total_score descending.
+  repeated LeaderboardEntry entries = 1;
+}
+
+// PlayerScoreRequest asks for one player's aggregated score over a time range.
+// The client is identified by the token in gRPC metadata; the player by the
+// same betting_handle used elsewhere.
+message PlayerScoreRequest {
+  // Player identity as known to the client (the same betting_handle used at
+  // StartSession), scoped to the authenticated client.
+  string betting_handle = 1;
+  // Start of the time range, inclusive. Required.
+  google.protobuf.Timestamp from_time = 2;
+  // End of the time range, inclusive. Optional; defaults to now when unset.
+  google.protobuf.Timestamp to_time = 3;
+  // How to combine the player's play scores. Defaults to SUM when unspecified.
+  LeaderboardAggregation aggregation = 4;
+}
+
+message PlayerScoreResponse {
+  // The player's aggregated (sum or max) play score over the range, across all
+  // games. Zero when found is false.
+  double total_score = 1;
+  // Whether the player had any scored plays in the range. Distinguishes "no
+  // scored plays" from a genuine score of zero.
+  bool found = 2;
+}
+
+service Minigames {
+  // StartSession mints a stateless session token for the player and returns it
+  // together with the player identifier and the per-client lobby URL (carrying
+  // the token in its fragment). The lobby then lists games and reads
+  // leaderboards over HTTP.
+  rpc StartSession(StartSessionRequest) returns (StartSessionResponse);
+
+  // Leaderboard returns the client's top players by total score over a time
+  // range, optionally for a single game.
+  rpc Leaderboard(LeaderboardRequest) returns (LeaderboardResponse);
+
+  // PlayerScore returns one player's aggregated (sum or max) score over a time
+  // range, identified by betting_handle.
+  rpc PlayerScore(PlayerScoreRequest) returns (PlayerScoreResponse);
+}
