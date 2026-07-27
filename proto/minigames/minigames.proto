@@ -17,17 +17,6 @@ message StartSessionRequest {
   string betting_handle = 1;
 }
 
-// Game is one entry in the minigames offering. Returned by the HTTP GET /games
-// endpoint the lobby calls; no longer part of StartSession (see the deprecated
-// StartSessionResponse.games).
-message Game {
-  // Human-readable game name.
-  string name = 1;
-  // Full CDN asset URL for the game, with the session token appended as the
-  // `session` URL fragment (`#session=<token>`) so it stays client-side.
-  string asset_url = 2;
-}
-
 message StartSessionResponse {
   // Opaque, stable identifier for the player across sessions and games.
   string player_uuid = 1;
@@ -36,15 +25,11 @@ message StartSessionResponse {
   // lobby endpoints; the backend keeps no session state, validating the token
   // by signature and expiry.
   string session_token = 2;
-  // Deprecated: the offering is now served to the in-browser lobby via the HTTP
-  // GET /games endpoint, not returned here. StartSession returns lobby_url
-  // instead. Retained (reserved) for backward compatibility; always empty.
-  repeated Game games = 3 [deprecated = true];
   // Per-client lobby URL for this session, with the session token in its
   // `session` URL fragment (`<lobby-host>#session=<token>`). The operator embeds
-  // it in the player's browser; the lobby lists games and reads leaderboards
-  // over HTTP with the token.
-  string lobby_url = 4;
+  // it in the player's browser; the lobby lists games (HTTP GET /games) and
+  // reads leaderboards over HTTP with the token.
+  string lobby_url = 3;
 }
 
 // LeaderboardAggregation selects how a player's play scores are combined into

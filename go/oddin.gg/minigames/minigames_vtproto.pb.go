@@ -36,28 +36,6 @@ func (this *StartSessionRequest) EqualMessageVT(thatMsg proto.Message) bool {
 	}
 	return this.EqualVT(that)
 }
-func (this *Game) EqualVT(that *Game) bool {
-	if this == that {
-		return true
-	} else if this == nil || that == nil {
-		return false
-	}
-	if this.Name != that.Name {
-		return false
-	}
-	if this.AssetUrl != that.AssetUrl {
-		return false
-	}
-	return string(this.unknownFields) == string(that.unknownFields)
-}
-
-func (this *Game) EqualMessageVT(thatMsg proto.Message) bool {
-	that, ok := thatMsg.(*Game)
-	if !ok {
-		return false
-	}
-	return this.EqualVT(that)
-}
 func (this *StartSessionResponse) EqualVT(that *StartSessionResponse) bool {
 	if this == that {
 		return true
@@ -69,23 +47,6 @@ func (this *StartSessionResponse) EqualVT(that *StartSessionResponse) bool {
 	}
 	if this.SessionToken != that.SessionToken {
 		return false
-	}
-	if len(this.Games) != len(that.Games) {
-		return false
-	}
-	for i, vx := range this.Games {
-		vy := that.Games[i]
-		if p, q := vx, vy; p != q {
-			if p == nil {
-				p = &Game{}
-			}
-			if q == nil {
-				q = &Game{}
-			}
-			if !p.EqualVT(q) {
-				return false
-			}
-		}
 	}
 	if this.LobbyUrl != that.LobbyUrl {
 		return false
