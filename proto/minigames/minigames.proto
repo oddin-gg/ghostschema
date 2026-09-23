@@ -15,6 +15,18 @@ message StartSessionRequest {
   // scoped to the authenticated client; the backend maps it to an opaque
   // player_uuid.
   string betting_handle = 1;
+  // Language the player should see the lobby and the games in, as a lowercase
+  // ISO 639-1 code. Optional; empty means "en".
+  //
+  // It is returned inside lobby_url as a `lang` query parameter rather than
+  // acted on here, because nothing in this response is localized. The lobby
+  // reads it back out and passes it on when it lists games and when it opens
+  // one, so a player's language is chosen once, by the backend that knows who
+  // they are, and carried from there.
+  //
+  // Advisory: a language with no translation falls back rather than failing. An
+  // offering is not the place to argue about a locale.
+  string language = 2;
 }
 
 message StartSessionResponse {
