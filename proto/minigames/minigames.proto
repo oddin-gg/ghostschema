@@ -43,6 +43,30 @@ enum LeaderboardAggregation {
   LEADERBOARD_AGGREGATION_MAX = 2;
 }
 
+// ListGamesRequest asks for the games on offer to the authenticated client.
+message ListGamesRequest {
+  // Language for the descriptions, as a lowercase ISO 639-1 code. Optional; a
+  // game with no translation in it falls back to the default language, and then
+  // to an empty description.
+  string lang = 1;
+}
+
+// Game is one entry of the offering.
+message Game {
+  // Stable identifier, and the value LeaderboardRequest.game_slug and
+  // PlayerScoreRequest.game_slug take. This is the only way to learn those
+  // values over gRPC.
+  string slug = 1;
+  // Display name.
+  string name = 2;
+  // Description in the requested language, empty when nobody has written one.
+  string description = 3;
+}
+
+message ListGamesResponse {
+  repeated Game games = 1;
+}
+
 // LeaderboardRequest asks for the top players of the authenticated client,
 // ranked by their score over a time range.
 message LeaderboardRequest {
@@ -116,6 +140,14 @@ service Minigames {
   // the token in its fragment). The lobby then lists games and reads
   // leaderboards over HTTP.
   rpc StartSession(StartSessionRequest) returns (StartSessionResponse);
+
+  // ListGames returns the games on offer, each with the slug the two scoring
+  // calls filter by.
+  //
+  // It deliberately carries no asset or thumbnail URLs. Those address a build on
+  // the CDN for a player to load, which is the lobby's business, and a backend
+  // holding one could not use it without a session token anyway.
+  rpc ListGames(ListGamesRequest) returns (ListGamesResponse);
 
   // Leaderboard returns the client's top players by total score over a time
   // range, optionally for a single game.
