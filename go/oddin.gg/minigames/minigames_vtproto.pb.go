@@ -26,6 +26,9 @@ func (this *StartSessionRequest) EqualVT(that *StartSessionRequest) bool {
 	if this.BettingHandle != that.BettingHandle {
 		return false
 	}
+	if this.Lang != that.Lang {
+		return false
+	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
 
