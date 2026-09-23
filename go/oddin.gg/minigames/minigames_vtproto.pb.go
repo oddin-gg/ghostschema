@@ -168,6 +168,9 @@ func (this *PlayerScoreRequest) EqualVT(that *PlayerScoreRequest) bool {
 	if this.Aggregation != that.Aggregation {
 		return false
 	}
+	if this.GameSlug != that.GameSlug {
+		return false
+	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
 
@@ -188,6 +191,9 @@ func (this *PlayerScoreResponse) EqualVT(that *PlayerScoreResponse) bool {
 		return false
 	}
 	if this.Found != that.Found {
+		return false
+	}
+	if this.Ranking != that.Ranking {
 		return false
 	}
 	return string(this.unknownFields) == string(that.unknownFields)

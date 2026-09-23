@@ -36,8 +36,9 @@ type MinigamesClient interface {
 	// Leaderboard returns the client's top players by total score over a time
 	// range, optionally for a single game.
 	Leaderboard(ctx context.Context, in *LeaderboardRequest, opts ...grpc.CallOption) (*LeaderboardResponse, error)
-	// PlayerScore returns one player's aggregated (sum or max) score over a time
-	// range, identified by betting_handle.
+	// PlayerScore returns one player's aggregated (sum or max) score and their
+	// position over a time range, identified by betting_handle, optionally for a
+	// single game.
 	PlayerScore(ctx context.Context, in *PlayerScoreRequest, opts ...grpc.CallOption) (*PlayerScoreResponse, error)
 }
 
@@ -91,8 +92,9 @@ type MinigamesServer interface {
 	// Leaderboard returns the client's top players by total score over a time
 	// range, optionally for a single game.
 	Leaderboard(context.Context, *LeaderboardRequest) (*LeaderboardResponse, error)
-	// PlayerScore returns one player's aggregated (sum or max) score over a time
-	// range, identified by betting_handle.
+	// PlayerScore returns one player's aggregated (sum or max) score and their
+	// position over a time range, identified by betting_handle, optionally for a
+	// single game.
 	PlayerScore(context.Context, *PlayerScoreRequest) (*PlayerScoreResponse, error)
 	mustEmbedUnimplementedMinigamesServer()
 }

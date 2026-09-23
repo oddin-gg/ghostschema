@@ -87,15 +87,27 @@ message PlayerScoreRequest {
   google.protobuf.Timestamp to_time = 3;
   // How to combine the player's play scores. Defaults to SUM when unspecified.
   LeaderboardAggregation aggregation = 4;
+  // Restrict to a single game by its slug; empty means across all games. Same
+  // meaning as LeaderboardRequest.game_slug, so a score and the leaderboard it
+  // sits in can be asked for on the same terms.
+  string game_slug = 5;
 }
 
 message PlayerScoreResponse {
-  // The player's aggregated (sum or max) play score over the range, across all
-  // games. Zero when found is false.
+  // The player's aggregated (sum or max) play score over the range. Zero when
+  // found is false.
   double total_score = 1;
   // Whether the player had any scored plays in the range. Distinguishes "no
   // scored plays" from a genuine score of zero.
   bool found = 2;
+  // The player's 1-based position among the client's players over the same
+  // range, game and aggregation — the position they would hold in the
+  // corresponding Leaderboard call.
+  //
+  // Standard competition ranking: players on equal scores share a position and
+  // the next score takes the position after the tie (1, 2, 2, 4). Zero when
+  // found is false, since a player with no scored plays holds no position.
+  int64 ranking = 3;
 }
 
 service Minigames {
@@ -109,7 +121,8 @@ service Minigames {
   // range, optionally for a single game.
   rpc Leaderboard(LeaderboardRequest) returns (LeaderboardResponse);
 
-  // PlayerScore returns one player's aggregated (sum or max) score over a time
-  // range, identified by betting_handle.
+  // PlayerScore returns one player's aggregated (sum or max) score and their
+  // position over a time range, identified by betting_handle, optionally for a
+  // single game.
   rpc PlayerScore(PlayerScoreRequest) returns (PlayerScoreResponse);
 }
