@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	Minigames_StartSession_FullMethodName = "/minigames.Minigames/StartSession"
+	Minigames_ListGames_FullMethodName    = "/minigames.Minigames/ListGames"
 	Minigames_Leaderboard_FullMethodName  = "/minigames.Minigames/Leaderboard"
 	Minigames_PlayerScore_FullMethodName  = "/minigames.Minigames/PlayerScore"
 )
@@ -33,11 +34,19 @@ type MinigamesClient interface {
 	// the token in its fragment). The lobby then lists games and reads
 	// leaderboards over HTTP.
 	StartSession(ctx context.Context, in *StartSessionRequest, opts ...grpc.CallOption) (*StartSessionResponse, error)
+	// ListGames returns the games on offer, each with the slug the two scoring
+	// calls filter by.
+	//
+	// It deliberately carries no asset or thumbnail URLs. Those address a build on
+	// the CDN for a player to load, which is the lobby's business, and a backend
+	// holding one could not use it without a session token anyway.
+	ListGames(ctx context.Context, in *ListGamesRequest, opts ...grpc.CallOption) (*ListGamesResponse, error)
 	// Leaderboard returns the client's top players by total score over a time
 	// range, optionally for a single game.
 	Leaderboard(ctx context.Context, in *LeaderboardRequest, opts ...grpc.CallOption) (*LeaderboardResponse, error)
-	// PlayerScore returns one player's aggregated (sum or max) score over a time
-	// range, identified by betting_handle.
+	// PlayerScore returns one player's aggregated (sum or max) score and their
+	// position over a time range, identified by betting_handle, optionally for a
+	// single game.
 	PlayerScore(ctx context.Context, in *PlayerScoreRequest, opts ...grpc.CallOption) (*PlayerScoreResponse, error)
 }
 
@@ -53,6 +62,16 @@ func (c *minigamesClient) StartSession(ctx context.Context, in *StartSessionRequ
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(StartSessionResponse)
 	err := c.cc.Invoke(ctx, Minigames_StartSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *minigamesClient) ListGames(ctx context.Context, in *ListGamesRequest, opts ...grpc.CallOption) (*ListGamesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListGamesResponse)
+	err := c.cc.Invoke(ctx, Minigames_ListGames_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -88,11 +107,19 @@ type MinigamesServer interface {
 	// the token in its fragment). The lobby then lists games and reads
 	// leaderboards over HTTP.
 	StartSession(context.Context, *StartSessionRequest) (*StartSessionResponse, error)
+	// ListGames returns the games on offer, each with the slug the two scoring
+	// calls filter by.
+	//
+	// It deliberately carries no asset or thumbnail URLs. Those address a build on
+	// the CDN for a player to load, which is the lobby's business, and a backend
+	// holding one could not use it without a session token anyway.
+	ListGames(context.Context, *ListGamesRequest) (*ListGamesResponse, error)
 	// Leaderboard returns the client's top players by total score over a time
 	// range, optionally for a single game.
 	Leaderboard(context.Context, *LeaderboardRequest) (*LeaderboardResponse, error)
-	// PlayerScore returns one player's aggregated (sum or max) score over a time
-	// range, identified by betting_handle.
+	// PlayerScore returns one player's aggregated (sum or max) score and their
+	// position over a time range, identified by betting_handle, optionally for a
+	// single game.
 	PlayerScore(context.Context, *PlayerScoreRequest) (*PlayerScoreResponse, error)
 	mustEmbedUnimplementedMinigamesServer()
 }
@@ -106,6 +133,9 @@ type UnimplementedMinigamesServer struct{}
 
 func (UnimplementedMinigamesServer) StartSession(context.Context, *StartSessionRequest) (*StartSessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartSession not implemented")
+}
+func (UnimplementedMinigamesServer) ListGames(context.Context, *ListGamesRequest) (*ListGamesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListGames not implemented")
 }
 func (UnimplementedMinigamesServer) Leaderboard(context.Context, *LeaderboardRequest) (*LeaderboardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Leaderboard not implemented")
@@ -148,6 +178,24 @@ func _Minigames_StartSession_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MinigamesServer).StartSession(ctx, req.(*StartSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Minigames_ListGames_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListGamesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MinigamesServer).ListGames(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Minigames_ListGames_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MinigamesServer).ListGames(ctx, req.(*ListGamesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -198,6 +246,10 @@ var Minigames_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StartSession",
 			Handler:    _Minigames_StartSession_Handler,
+		},
+		{
+			MethodName: "ListGames",
+			Handler:    _Minigames_ListGames_Handler,
 		},
 		{
 			MethodName: "Leaderboard",

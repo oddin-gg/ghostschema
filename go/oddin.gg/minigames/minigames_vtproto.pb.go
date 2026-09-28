@@ -26,6 +26,9 @@ func (this *StartSessionRequest) EqualVT(that *StartSessionRequest) bool {
 	if this.BettingHandle != that.BettingHandle {
 		return false
 	}
+	if this.Lang != that.Lang {
+		return false
+	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
 
@@ -56,6 +59,83 @@ func (this *StartSessionResponse) EqualVT(that *StartSessionResponse) bool {
 
 func (this *StartSessionResponse) EqualMessageVT(thatMsg proto.Message) bool {
 	that, ok := thatMsg.(*StartSessionResponse)
+	if !ok {
+		return false
+	}
+	return this.EqualVT(that)
+}
+func (this *ListGamesRequest) EqualVT(that *ListGamesRequest) bool {
+	if this == that {
+		return true
+	} else if this == nil || that == nil {
+		return false
+	}
+	if this.Lang != that.Lang {
+		return false
+	}
+	return string(this.unknownFields) == string(that.unknownFields)
+}
+
+func (this *ListGamesRequest) EqualMessageVT(thatMsg proto.Message) bool {
+	that, ok := thatMsg.(*ListGamesRequest)
+	if !ok {
+		return false
+	}
+	return this.EqualVT(that)
+}
+func (this *Game) EqualVT(that *Game) bool {
+	if this == that {
+		return true
+	} else if this == nil || that == nil {
+		return false
+	}
+	if this.Slug != that.Slug {
+		return false
+	}
+	if this.Name != that.Name {
+		return false
+	}
+	if this.Description != that.Description {
+		return false
+	}
+	return string(this.unknownFields) == string(that.unknownFields)
+}
+
+func (this *Game) EqualMessageVT(thatMsg proto.Message) bool {
+	that, ok := thatMsg.(*Game)
+	if !ok {
+		return false
+	}
+	return this.EqualVT(that)
+}
+func (this *ListGamesResponse) EqualVT(that *ListGamesResponse) bool {
+	if this == that {
+		return true
+	} else if this == nil || that == nil {
+		return false
+	}
+	if len(this.Games) != len(that.Games) {
+		return false
+	}
+	for i, vx := range this.Games {
+		vy := that.Games[i]
+		if p, q := vx, vy; p != q {
+			if p == nil {
+				p = &Game{}
+			}
+			if q == nil {
+				q = &Game{}
+			}
+			if !p.EqualVT(q) {
+				return false
+			}
+		}
+	}
+	return string(this.unknownFields) == string(that.unknownFields)
+}
+
+func (this *ListGamesResponse) EqualMessageVT(thatMsg proto.Message) bool {
+	that, ok := thatMsg.(*ListGamesResponse)
 	if !ok {
 		return false
 	}
@@ -168,6 +248,9 @@ func (this *PlayerScoreRequest) EqualVT(that *PlayerScoreRequest) bool {
 	if this.Aggregation != that.Aggregation {
 		return false
 	}
+	if this.GameSlug != that.GameSlug {
+		return false
+	}
 	return string(this.unknownFields) == string(that.unknownFields)
 }
 
@@ -188,6 +271,9 @@ func (this *PlayerScoreResponse) EqualVT(that *PlayerScoreResponse) bool {
 		return false
 	}
 	if this.Found != that.Found {
+		return false
+	}
+	if this.Ranking != that.Ranking {
 		return false
 	}
 	return string(this.unknownFields) == string(that.unknownFields)

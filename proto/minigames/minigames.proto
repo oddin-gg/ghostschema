@@ -15,6 +15,17 @@ message StartSessionRequest {
   // scoped to the authenticated client; the backend maps it to an opaque
   // player_uuid.
   string betting_handle = 1;
+  // Language the player should see the lobby and the games in, as a lowercase
+  // ISO 639-1 code. Optional; empty means "en".
+  //
+  // It is returned inside lobby_url as a `lang` query parameter rather than
+  // acted on here, because nothing in this response is localized. The lobby
+  // reads it back out and passes it on when it lists games and when it opens
+  // one, so a player's language is chosen once, by the backend that knows who
+  // they are, and carried from there.
+  //
+  // Advisory: a language with no translation falls back rather than failing.
+  string lang = 2;
 }
 
 message StartSessionResponse {
@@ -41,6 +52,30 @@ enum LeaderboardAggregation {
   LEADERBOARD_AGGREGATION_SUM = 1;
   // The player's single highest play score.
   LEADERBOARD_AGGREGATION_MAX = 2;
+}
+
+// ListGamesRequest asks for the games on offer to the authenticated client.
+message ListGamesRequest {
+  // Language for the descriptions, as a lowercase ISO 639-1 code. Optional; a
+  // game with no translation in it falls back to the default language, and then
+  // to an empty description.
+  string lang = 1;
+}
+
+// Game is one entry of the offering.
+message Game {
+  // Stable identifier, and the value LeaderboardRequest.game_slug and
+  // PlayerScoreRequest.game_slug take. This is the only way to learn those
+  // values over gRPC.
+  string slug = 1;
+  // Display name.
+  string name = 2;
+  // Description in the requested language, empty when nobody has written one.
+  string description = 3;
+}
+
+message ListGamesResponse {
+  repeated Game games = 1;
 }
 
 // LeaderboardRequest asks for the top players of the authenticated client,
@@ -87,15 +122,27 @@ message PlayerScoreRequest {
   google.protobuf.Timestamp to_time = 3;
   // How to combine the player's play scores. Defaults to SUM when unspecified.
   LeaderboardAggregation aggregation = 4;
+  // Restrict to a single game by its slug; empty means across all games. Same
+  // meaning as LeaderboardRequest.game_slug, so a score and the leaderboard it
+  // sits in can be asked for on the same terms.
+  string game_slug = 5;
 }
 
 message PlayerScoreResponse {
-  // The player's aggregated (sum or max) play score over the range, across all
-  // games. Zero when found is false.
+  // The player's aggregated (sum or max) play score over the range. Zero when
+  // found is false.
   double total_score = 1;
   // Whether the player had any scored plays in the range. Distinguishes "no
   // scored plays" from a genuine score of zero.
   bool found = 2;
+  // The player's 1-based position among the client's players over the same
+  // range, game and aggregation — the position they would hold in the
+  // corresponding Leaderboard call.
+  //
+  // Standard competition ranking: players on equal scores share a position and
+  // the next score takes the position after the tie (1, 2, 2, 4). Zero when
+  // found is false, since a player with no scored plays holds no position.
+  int64 ranking = 3;
 }
 
 service Minigames {
@@ -105,11 +152,20 @@ service Minigames {
   // leaderboards over HTTP.
   rpc StartSession(StartSessionRequest) returns (StartSessionResponse);
 
+  // ListGames returns the games on offer, each with the slug the two scoring
+  // calls filter by.
+  //
+  // It deliberately carries no asset or thumbnail URLs. Those address a build on
+  // the CDN for a player to load, which is the lobby's business, and a backend
+  // holding one could not use it without a session token anyway.
+  rpc ListGames(ListGamesRequest) returns (ListGamesResponse);
+
   // Leaderboard returns the client's top players by total score over a time
   // range, optionally for a single game.
   rpc Leaderboard(LeaderboardRequest) returns (LeaderboardResponse);
 
-  // PlayerScore returns one player's aggregated (sum or max) score over a time
-  // range, identified by betting_handle.
+  // PlayerScore returns one player's aggregated (sum or max) score and their
+  // position over a time range, identified by betting_handle, optionally for a
+  // single game.
   rpc PlayerScore(PlayerScoreRequest) returns (PlayerScoreResponse);
 }
