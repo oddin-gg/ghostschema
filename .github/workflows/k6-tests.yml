@@ -17,24 +17,30 @@ on:
 permissions:
   contents: read
 
+# Queue rather than cancel: a cancelled run fires the failure alert below,
+# so superseding a scheduled run with a manual one would page for nothing.
 concurrency:
   group: k6-tests
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   k6-tests:
     runs-on: [self-hosted, linux]
     timeout-minutes: 30
+    outputs:
+      summary: ${{ steps.results.outputs.summary }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Fetch bragi protos
+        id: protos
         working-directory: k6
         run: bash setup_protos.sh
 
       - name: Install K6
+        id: install_k6
         run: |
           if command -v k6 &> /dev/null; then
             echo "k6 already installed: $(k6 version)"
@@ -65,32 +71,57 @@ jobs:
           BRAGI_TOKEN: ${{ secrets.BRAGI_TOKEN }}
           GHOST_TOKEN: ${{ secrets.GHOST_TOKEN }}
 
+      # A suite counts as failed unless it succeeded or was deselected in a
+      # manual dispatch. "skipped" after a failed setup step and "cancelled"
+      # are failures too: they verified nothing.
       - name: Check test results
+        id: results
         if: always()
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           FAILED=""
-          add() { [ "$2" = "failure" ] && FAILED="${FAILED:+$FAILED, }$1" || true; }
-          add ghost_match_status "${{ steps.test_ghost_match_status.outcome }}"
-          add ghost_match_info   "${{ steps.test_ghost_match_info.outcome }}"
+          add() { # name, outcome, selected
+            [ "$2" = "success" ] && return
+            [ "$2" = "skipped" ] && [ "$3" = "false" ] && return
+            FAILED="${FAILED:+$FAILED, }$1 ($2)"
+          }
+          add ghost_match_status "${{ steps.test_ghost_match_status.outcome }}" "${{ github.event_name != 'workflow_dispatch' || inputs.run_ghost_match_status }}"
+          add ghost_match_info   "${{ steps.test_ghost_match_info.outcome }}"   "${{ github.event_name != 'workflow_dispatch' || inputs.run_ghost_match_info }}"
 
-          if [ -z "$FAILED" ]; then
-            echo "All k6 tests passed"
+          if [ "${{ steps.protos.outcome }}" != "success" ]; then
+            SUMMARY="Fetching the bragi protos failed (setup_protos.sh); no suites ran."
+          elif [ "${{ steps.install_k6.outcome }}" != "success" ]; then
+            SUMMARY="k6 install failed on the runner; no suites ran."
+          elif [ -n "$FAILED" ]; then
+            SUMMARY="Failed suites: $FAILED"
+          else
+            echo "All selected k6 suites passed"
             exit 0
           fi
-          echo "::error::Failed k6 suites: $FAILED"
-
-          # Notify Slack on failure (no-op if SLACK_WEBHOOK_URL is unset).
-          if [ -n "$SLACK_WEBHOOK_URL" ]; then
-            RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-            # Prefer python3 for correct JSON escaping; fall back to a manual
-            # payload (content here is controlled — static suite names + URL).
-            if command -v python3 >/dev/null 2>&1; then
-              PAYLOAD=$(FAILED="$FAILED" RUN_URL="$RUN_URL" python3 -c 'import json, os; print(json.dumps({"text": ":rotating_light: ghostschema k6 gRPC tests FAILED\nSuites: {}\nRun: {}".format(os.environ["FAILED"], os.environ["RUN_URL"])}))')
-            else
-              PAYLOAD="{\"text\":\":rotating_light: ghostschema k6 gRPC tests FAILED\nSuites: ${FAILED}\nRun: ${RUN_URL}\"}"
-            fi
-            curl -fsS -X POST "$SLACK_WEBHOOK_URL" -H 'Content-Type: application/json' -d "$PAYLOAD"
-          fi
+          echo "summary=$SUMMARY" >> "$GITHUB_OUTPUT"
+          echo "::error::$SUMMARY"
           exit 1
+
+  # Alerting lives in its own job on a GitHub-hosted runner so it still fires
+  # when the self-hosted job never got that far: no runner online (the job
+  # sits queued and is cancelled after 24h), a timeout, or a crashed runner.
+  notify:
+    needs: k6-tests
+    if: ${{ always() && needs.k6-tests.result != 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Notify Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RESULT: ${{ needs.k6-tests.result }}
+          SUMMARY: ${{ needs.k6-tests.outputs.summary }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          DETAIL="${SUMMARY:-The k6 job did not finish (result: $RESULT). Likely no self-hosted runner picked it up, or it timed out.}"
+          echo "::error::$DETAIL"
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "SLACK_WEBHOOK_URL is not set; skipping the Slack message."
+            exit 0
+          fi
+          PAYLOAD=$(DETAIL="$DETAIL" python3 -c 'import json, os; print(json.dumps({"text": ":rotating_light: ghostschema k6 gRPC tests FAILED\n{}\nRun: {}".format(os.environ["DETAIL"], os.environ["RUN_URL"])}))')
+          curl -fsS -X POST "$SLACK_WEBHOOK_URL" -H 'Content-Type: application/json' -d "$PAYLOAD"
