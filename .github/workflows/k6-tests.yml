@@ -25,12 +25,16 @@ concurrency:
 
 jobs:
   k6-tests:
-    runs-on: [self-hosted, linux]
+    # The org's RunsOn fleet (terraform-aws-workloads docs/github-runners.md).
+    # It reaches the Bragi and Ghost test endpoints directly, with no VPN.
+    runs-on: runs-on/fleet=arm64-2c/env=production
     timeout-minutes: 30
     outputs:
       summary: ${{ steps.results.outputs.summary }}
 
     steps:
+      - uses: runs-on/action@17b59092eb37ebfdbb034460892887c09100eaa3 # v2.5.0, must be the first step
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -41,15 +45,9 @@ jobs:
 
       - name: Install K6
         id: install_k6
-        run: |
-          if command -v k6 &> /dev/null; then
-            echo "k6 already installed: $(k6 version)"
-          else
-            curl -fsSL https://dl.k6.io/key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/k6-archive-keyring.gpg
-            echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
-            sudo apt-get update
-            sudo apt-get install -y k6
-          fi
+        uses: grafana/setup-k6-action@43b9fc21641a76002687994433dd586f56e791b1 # v1.2.2
+        with:
+          k6-version: '1.6.1'
 
       - name: Run ghost_match_status
         id: test_ghost_match_status
@@ -102,8 +100,8 @@ jobs:
           exit 1
 
   # Alerting lives in its own job on a GitHub-hosted runner so it still fires
-  # when the self-hosted job never got that far: no runner online (the job
-  # sits queued and is cancelled after 24h), a timeout, or a crashed runner.
+  # when the RunsOn job never got that far: no runner launched (the job sits
+  # queued and is cancelled after 24h), a timeout, or a spot interruption.
   notify:
     needs: k6-tests
     if: ${{ always() && needs.k6-tests.result != 'success' }}
@@ -117,7 +115,7 @@ jobs:
           SUMMARY: ${{ needs.k6-tests.outputs.summary }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          DETAIL="${SUMMARY:-The k6 job did not finish (result: $RESULT). Likely no self-hosted runner picked it up, or it timed out.}"
+          DETAIL="${SUMMARY:-The k6 job did not finish (result: $RESULT). Likely no RunsOn runner picked it up, it was interrupted, or it timed out.}"
           echo "::error::$DETAIL"
           if [ -z "$SLACK_WEBHOOK_URL" ]; then
             echo "SLACK_WEBHOOK_URL is not set; skipping the Slack message."
