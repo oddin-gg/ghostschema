@@ -25,16 +25,16 @@ concurrency:
 
 jobs:
   k6-tests:
-    # The org's RunsOn fleet (terraform-aws-workloads docs/github-runners.md).
-    # It reaches the Bragi and Ghost test endpoints directly, with no VPN.
-    runs-on: runs-on/fleet=arm64-2c/env=production
+    # GitHub-hosted. The suites target staging (the old test account; the
+    # BRAGI_ADDR / GHOST_ADDR defaults), which is internet-facing, so no VPN
+    # or self-hosted runner is needed. The org's RunsOn runners are not used:
+    # this repo is public, and no public repo is enabled on their runner group.
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
       summary: ${{ steps.results.outputs.summary }}
 
     steps:
-      - uses: runs-on/action@17b59092eb37ebfdbb034460892887c09100eaa3 # v2.5.0, must be the first step
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -100,8 +100,8 @@ jobs:
           exit 1
 
   # Alerting lives in its own job on a GitHub-hosted runner so it still fires
-  # when the RunsOn job never got that far: no runner launched (the job sits
-  # queued and is cancelled after 24h), a timeout, or a spot interruption.
+  # when the k6 job never got that far: it was cancelled, timed out, or never
+  # started.
   notify:
     needs: k6-tests
     if: ${{ always() && needs.k6-tests.result != 'success' }}
@@ -115,7 +115,7 @@ jobs:
           SUMMARY: ${{ needs.k6-tests.outputs.summary }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          DETAIL="${SUMMARY:-The k6 job did not finish (result: $RESULT). Likely no RunsOn runner picked it up, it was interrupted, or it timed out.}"
+          DETAIL="${SUMMARY:-The k6 job did not finish (result: $RESULT). It was cancelled, timed out, or never started.}"
           echo "::error::$DETAIL"
           if [ -z "$SLACK_WEBHOOK_URL" ]; then
             echo "SLACK_WEBHOOK_URL is not set; skipping the Slack message."
