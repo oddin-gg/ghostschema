@@ -87,7 +87,9 @@ message LeaderboardRequest {
   google.protobuf.Timestamp from_time = 2;
   // End of the time range, inclusive. Optional; defaults to now when unset.
   google.protobuf.Timestamp to_time = 3;
-  // Maximum number of players to return. Capped at 100.
+  // Maximum number of players to return. Required: it must be positive, and a
+  // request leaving it unset is rejected with INVALID_ARGUMENT rather than
+  // served a default page. Capped at 100.
   int32 limit = 4;
   // How to combine a player's play scores into their ranking score. Defaults
   // to SUM when unspecified.
@@ -100,7 +102,9 @@ message LeaderboardEntry {
   string player_uuid = 1;
   // The player's betting handle as supplied by the client.
   string betting_handle = 2;
-  // Sum of the player's play scores over the requested range and game(s).
+  // The player's play scores over the requested range and game(s), combined by
+  // the request's aggregation: their sum, or their single highest score when
+  // aggregation is MAX.
   double total_score = 3;
 }
 

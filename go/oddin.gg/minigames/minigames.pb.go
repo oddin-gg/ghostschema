@@ -380,7 +380,9 @@ type LeaderboardRequest struct {
 	FromTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=from_time,json=fromTime,proto3" json:"from_time,omitempty"`
 	// End of the time range, inclusive. Optional; defaults to now when unset.
 	ToTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=to_time,json=toTime,proto3" json:"to_time,omitempty"`
-	// Maximum number of players to return. Capped at 100.
+	// Maximum number of players to return. Required: it must be positive, and a
+	// request leaving it unset is rejected with INVALID_ARGUMENT rather than
+	// served a default page. Capped at 100.
 	Limit int32 `protobuf:"varint,4,opt,name=limit,proto3" json:"limit,omitempty"`
 	// How to combine a player's play scores into their ranking score. Defaults
 	// to SUM when unspecified.
@@ -461,7 +463,9 @@ type LeaderboardEntry struct {
 	PlayerUuid string `protobuf:"bytes,1,opt,name=player_uuid,json=playerUuid,proto3" json:"player_uuid,omitempty"`
 	// The player's betting handle as supplied by the client.
 	BettingHandle string `protobuf:"bytes,2,opt,name=betting_handle,json=bettingHandle,proto3" json:"betting_handle,omitempty"`
-	// Sum of the player's play scores over the requested range and game(s).
+	// The player's play scores over the requested range and game(s), combined by
+	// the request's aggregation: their sum, or their single highest score when
+	// aggregation is MAX.
 	TotalScore    float64 `protobuf:"fixed64,3,opt,name=total_score,json=totalScore,proto3" json:"total_score,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
