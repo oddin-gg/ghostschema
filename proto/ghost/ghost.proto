@@ -6,6 +6,7 @@ option go_package = "oddin.gg/ghost";
 option java_package = "com.oddin.ghost";
 
 message MatchInfoRequest {
+  // Match URN, e.g. "od:match:1946365".
   string match_urn = 1;
   optional string lang = 2;
 }
@@ -34,6 +35,7 @@ message Dota2MatchInfoResponse {
 }
 
 message MatchStatusRequest {
+  // Match URN, e.g. "od:match:1946365".
   string match_urn = 1;
 }
 
