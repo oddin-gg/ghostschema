@@ -70,9 +70,10 @@ func (MatchStatus) EnumDescriptor() ([]byte, []int) {
 }
 
 type MatchInfoRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	MatchUrn      string                 `protobuf:"bytes,1,opt,name=match_urn,json=matchUrn,proto3" json:"match_urn,omitempty"`
-	Lang          *string                `protobuf:"bytes,2,opt,name=lang,proto3,oneof" json:"lang,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Match URN, e.g. "od:match:1946365".
+	MatchUrn      string  `protobuf:"bytes,1,opt,name=match_urn,json=matchUrn,proto3" json:"match_urn,omitempty"`
+	Lang          *string `protobuf:"bytes,2,opt,name=lang,proto3,oneof" json:"lang,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -334,8 +335,9 @@ func (x *Dota2MatchInfoResponse) GetAssetUrl() string {
 }
 
 type MatchStatusRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	MatchUrn      string                 `protobuf:"bytes,1,opt,name=match_urn,json=matchUrn,proto3" json:"match_urn,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Match URN, e.g. "od:match:1946365".
+	MatchUrn      string `protobuf:"bytes,1,opt,name=match_urn,json=matchUrn,proto3" json:"match_urn,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
